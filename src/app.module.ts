@@ -7,9 +7,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import config from 'ormconfig';
 import { jwtConstants } from './constants/messeges/checkError';
+import { AdminModule } from './modules/admin/admin.module';
+import { CourseModule } from './modules/course/course.module';
+import { RoleMiddlewareConfig } from './modules/middleware/role-config.middleware';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(config), UserModule,
+  imports: [TypeOrmModule.forRoot(config),
+    AdminModule, 
+    UserModule,
+    CourseModule,
     JwtModule.register({
       // global: true,
       secret: process.env.JWT_SECRET_KEY || jwtConstants.secret,
@@ -20,14 +26,6 @@ import { jwtConstants } from './constants/messeges/checkError';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    // consumer
-    //   .apply(AuthMiddleware)
-    //   .forRoutes('/user*');
-    consumer
-      .apply(userRoleMiddleware)
-      .forRoutes('/user*');
-    consumer
-      .apply(adminRoleMiddleware)
-      .forRoutes('/user*');
+    RoleMiddlewareConfig.configure(consumer);
   }
 }

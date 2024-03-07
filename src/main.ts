@@ -1,8 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { VERSION_NEUTRAL, ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
+import { FastifyRequest } from 'fastify';
 
 require('dotenv').config();
 async function bootstrap() {
@@ -15,6 +16,7 @@ async function bootstrap() {
   .setTitle('Doc API Project demo')
   .setDescription('My doc API description')
   .setVersion('1.0')
+  .addBearerAuth()
   .addServer('http://localhost:3000/', 'Local environment')
   .addServer('https://staging.yourapi.com/', 'Staging')
   .addServer('https://production.yourapi.com/', 'Production')
@@ -31,6 +33,15 @@ async function bootstrap() {
 };
 
 app.enableCors(corsOptions); 
+
+
+//version
+app.setGlobalPrefix('api'); 
+app.enableVersioning({
+  type: VersioningType.URI,
+});
+
+
 
 const document = SwaggerModule.createDocument(app, options);
 SwaggerModule.setup('api-docs', app, document);

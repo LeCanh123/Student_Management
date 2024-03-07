@@ -8,16 +8,30 @@ export class adminRoleMiddleware implements NestMiddleware {
     ) {}
 
   use(req: Request, res: Response, next: NextFunction) {
-    // console.log("header",req.headers);
     try{
+      if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+        const token = req.headers.authorization.slice(7);
         const veryfy=this.jwtService.verify(
-        String(req.headers.access_token),{
-        secret:process.env.SECRET_kEY
-        })
-        console.log("veryfy",veryfy);
-        if(veryfy){
-          next();
-        }
+          token,{
+          secret:process.env.SECRET_kEY
+          })
+          console.log("veryfy",veryfy);
+          if(veryfy.role==0){
+            next();
+          }else{
+            res.status(HttpStatus.FORBIDDEN).json({
+              error: "Forbidden",
+              message: "You do not have permission to access this resource."
+            });
+          }
+      } else {
+        res.status(HttpStatus.FORBIDDEN).json({
+          error: "Forbidden",
+          message: "You do not have permission to access this resource."
+        });
+      }
+
+
     }catch(error){
       res.status(HttpStatus.UNAUTHORIZED).json({
         error: "Unauthorized",

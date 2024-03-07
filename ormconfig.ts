@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { User } from 'src/modules/user/database/user.entity';
 import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
-
+import { Course } from 'src/modules/course/database/course.entity';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
 
@@ -14,7 +14,7 @@ const config: MysqlConnectionOptions = {
   password: process.env.DB_PASSWORD || '',
   type: 'mysql',
   database: process.env.DB_NAME || 'TrainingManagement',
-  entities: [User],
+  entities: [User,Course],
   synchronize: false,
   namingStrategy: new SnakeNamingStrategy(),
 };
