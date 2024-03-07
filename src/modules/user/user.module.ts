@@ -9,7 +9,6 @@ require('dotenv').config();
 @Module({
   imports: [TypeOrmModule.forFeature([User]),
   JwtModule.register({
-    // global: true,
     secret: process.env.JWT_SECRET_KEY || jwtConstants.secret,
     signOptions: { expiresIn: '60s' },
   }),],
