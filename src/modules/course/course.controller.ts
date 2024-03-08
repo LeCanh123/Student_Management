@@ -53,7 +53,7 @@ export class CourseController {
 
   @Put(':id')
   @ApiBody({ 
-    description: 'Create a new course',
+    description: 'Update course',
     schema: {
       type: 'object',
       properties: {

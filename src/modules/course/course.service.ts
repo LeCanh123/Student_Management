@@ -14,7 +14,7 @@ export class CourseService {
   ) {}
   async getAll() {
     try{
-      const data = await this.courseRepository.find();
+      const data = await this.courseRepository.find({ where: { is_delete: false } });
       return {
         status:HttpStatus.OK,
         data
@@ -97,7 +97,7 @@ export class CourseService {
           status:HttpStatus.CREATED,
           data:{
             success:true,
-            message:"Create new course success"
+            message:"Update course success"
         }};
     }
     catch(error){
