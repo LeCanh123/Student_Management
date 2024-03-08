@@ -4,6 +4,7 @@ import UserDto from './dtos/user.dto';
 import UserLoginDto from './dtos/user-login.dto';
 import { Response } from 'express';
 import { ApiTags,ApiBody, ApiResponse } from '@nestjs/swagger';
+import { body_create, body_login, create_bad, create_success, login_error, login_success } from './swagger/user.swagger';
 
 @ApiTags('User')
 @Controller({ path: 'user', version: '' })
@@ -16,40 +17,19 @@ export class UserController {
   }
 
   @Post()
-  @ApiBody({ 
-    description: 'Create a new user account',
-    schema: {
-      type: 'object',
-      properties: {
-        username: { type: 'string' ,default:"user"},
-        password: { type: 'string' ,default:"123456"},
-        email: { type: 'string' ,default:"username@gmail.com"},
-        role: { type: 'number',default:"1"},
-      },
-      required: ['username', 'password', 'email', 'role']
-    }
-  })
-  @ApiResponse({ status: 201, description: 'The record has been successfully created.'})
-  @ApiResponse({ status: 403, description: 'Forbidden.'})
+  @ApiBody(body_create)
+  @ApiResponse(create_success)
+  @ApiResponse(create_bad)
+  @ApiBody(body_create)
   async create(@Body() user: UserDto , @Res() res: Response): Promise<any>  {
     let result= await this.userService.create(user);
     return res.status(result.status||HttpStatus.BAD_REQUEST).json(result.data);
   }
 
   @Post('/login')
-  @ApiBody({ 
-    description: 'Login',
-    schema: {
-      type: 'object',
-      properties: {
-        email: { type: 'string' ,default:"username@gmail.com"},
-        password: { type: 'string' ,default:"123456"},
-      },
-      required: ['username', 'password', 'email', 'role']
-    }
-  })
-  @ApiResponse({ status: 200, description: 'Login success.'})
-  @ApiResponse({ status: 403, description: 'Forbidden.'})
+  @ApiBody(body_login)
+  @ApiResponse(login_success)
+  @ApiResponse(login_error)
   async login(@Body() user: UserLoginDto, @Res() res: Response): Promise<any> {
     const { email, password } = user;
     let result=await this.userService.login(email, password);

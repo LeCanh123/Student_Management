@@ -16,7 +16,7 @@ export class UserService {
   async getAll() {
     const data = await this.userRepository.find();
     // console.log(data, 'data');
-    return "data";
+    return data;
   }
 
   async create(user:UserDto) {

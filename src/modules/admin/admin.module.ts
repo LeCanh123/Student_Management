@@ -15,7 +15,7 @@ import { User } from '../user/database/user.entity';
         })
     ],
     controllers: [AdminController],
-    providers: [AdminService,JwtService],
+    providers: [AdminService, JwtService],
     exports: [AdminService],
 })
-export class AdminModule {}
+export class AdminModule { }
