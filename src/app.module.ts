@@ -11,9 +11,11 @@ import { AdminModule } from './modules/admin/admin.module';
 import { CourseModule } from './modules/course/course.module';
 import { RoleMiddlewareConfig } from './modules/middleware/role-config.middleware';
 import { ClassModule } from './modules/class/class.module';
+import { TeacherModule } from './modules/teacher/teacher.module';
 
 @Module({
   imports: [TypeOrmModule.forRoot(config),
+    TeacherModule,
     AdminModule, 
     UserModule,
     CourseModule,

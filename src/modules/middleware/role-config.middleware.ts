@@ -18,6 +18,9 @@ export class RoleMiddlewareConfig {
       .forRoutes( 
                   { path: '/course*', method: RequestMethod.PUT},
                   { path: '/course*', method: RequestMethod.POST},
-                  { path: '/admin/1', method: RequestMethod.ALL });
+                  { path: '/teacher*', method: RequestMethod.POST},
+                  { path: '/admin/1', method: RequestMethod.ALL }
+                  
+                  );
   }
 }

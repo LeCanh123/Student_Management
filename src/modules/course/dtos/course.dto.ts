@@ -1,3 +1,4 @@
+import { Type } from "class-transformer";
 import { IsDate, IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 export default class CourseDto {
@@ -12,8 +13,10 @@ export default class CourseDto {
     duration:number
 
     @IsDate()
+    @Type(() => Date)
     start_date: Date;
 
     @IsDate()
+    @Type(() => Date)
     end_date: Date;
 }

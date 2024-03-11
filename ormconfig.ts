@@ -14,9 +14,11 @@ const config: MysqlConnectionOptions = {
   database: process.env.DB_NAME || 'TrainingManagement',
   entities: ["dist/**/*.entity{.ts,.js}"],
   migrations: ["dist/migrations/*{.ts,.js}"],
-  // synchronize: true,
   migrationsRun: true,
+
+  // synchronize: true,
   // dropSchema: true, 
+
   namingStrategy: new SnakeNamingStrategy(),
   migrationsTransactionMode:"all",
 }; 
