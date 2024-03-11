@@ -63,12 +63,11 @@ export class ClassService {
   }
 
   async create(class_data: ClassDto) {
-    console.log("class_data", class_data);
-
     try {
       const newClass = await this.classRepository.save({
         ...class_data,
-        course: { id: class_data.course_id }
+        course: { id: class_data.course_id },
+        teacher: { id: class_data.teacher_id }
       });
       return {
         status: HttpStatus.CREATED,
@@ -103,7 +102,7 @@ export class ClassService {
       }
       const updateClass = await this.classRepository.update(Number(id), {
         name: class_data.name,
-        teacher: class_data.teacher,
+        // teacher: {id:class_data.teacher},
         course: { id: class_data.course_id },
         max_students: class_data.max_students
       });

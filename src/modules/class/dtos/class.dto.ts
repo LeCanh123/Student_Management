@@ -16,4 +16,8 @@ export default class ClassDto {
     @IsNumber()
     @IsNotEmpty()
     course_id: number;
+
+    @IsNumber()
+    @IsNotEmpty()
+    teacher_id: number;
 }
