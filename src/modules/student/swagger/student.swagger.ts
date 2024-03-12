@@ -1,7 +1,20 @@
+import { diskStorage } from 'multer';
+import { v4 as uuidv4 } from 'uuid';
+import { FileInterceptor } from '@nestjs/platform-express';
+
+export const file_setup= FileInterceptor('file', {
+    storage: diskStorage({
+      destination: './uploads',
+      filename: (req, file, cb) => {
+        const filename = `${uuidv4()}-${file.originalname}`;
+        cb(null, filename);
+      },
+    }),
+  })
 
 export const get_success = {
     status: 200,
-    description: 'Get class success',
+    description: 'Get course success',
     schema: {
         type: 'array',
         items: {
@@ -9,9 +22,11 @@ export const get_success = {
             properties: {
                 id: { type: 'number' },
                 name: { type: 'string' },
-                teacher: { type: 'string' },
-                max_students: { type: 'number' },
-                is_delete: { type: 'boolean' }
+                dob: { type: 'string', format: 'date-time' },
+                email: { type: 'string',default:"student@gmail.com" },
+                phone: { type: 'string',default: "123456789"},
+                address: { type: 'string',default:"79 Dien bien phu, P.Dakao, Q1" },
+                is_delete: { type: 'boolean' },
             },
         }
     }
@@ -37,9 +52,66 @@ export const get_error = {
     }
 };
 
+export const async_with_excel_success ={
+    status: 200,
+    description: 'Get course success',
+    schema: {
+        type: 'array',
+        items: {
+            type: 'object',
+            properties: {
+                success: { type: 'boolean',default:true },
+                message: { type: 'string',default: "Async student success" },
+                
+            },
+        }
+    }
+}
+
+export const async_with_excel_failed ={
+    status: 400,
+    description: 'Error: Bad Request',
+    schema: {
+        type: 'object',
+        properties: {
+          error: {
+                type: 'string',
+                properties: {
+                },
+                default:"Bad Request"
+            },
+            message: {
+                type: 'string',
+                default:"Data is invalid"
+            },
+            statusCode:{
+              type:"number",
+              default:400
+            }
+        },
+    }
+}
+
+
+export const body_async_with_excel = {
+    description: 'Async student with exel',
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+            type: 'string',
+            format: 'binary',
+          }
+      },
+      required: []
+    }
+}
+
+
+
 export const search_success = {
     status: 200,
-    description: 'Search class success',
+    description: 'Search student success',
     schema: {
         type: 'array',
         items: {
@@ -47,9 +119,11 @@ export const search_success = {
             properties: {
                 id: { type: 'number' },
                 name: { type: 'string' },
-                teacher: { type: 'string' },
-                max_students: { type: 'number' },
-                is_delete: { type: 'boolean' }
+                dob: { type: 'string', format: 'date-time' },
+                email: { type: 'string',default:"student@gmail.com" },
+                phone: { type: 'string' ,default:"123456789"},
+                address: { type: 'string',default:"79 Dien bien phu, P.Dakao, Q1"  },
+                is_delete: { type: 'boolean' },
             },
         }
     }
@@ -77,7 +151,7 @@ export const search_server_error = {
 
 export const get_by_id_success = {
     status: 200,
-    description: 'Get class success',
+    description: 'Get student success',
     schema: {
         type: 'array',
         items: {
@@ -85,9 +159,11 @@ export const get_by_id_success = {
             properties: {
                 id: { type: 'number' },
                 name: { type: 'string' },
-                teacher: { type: 'string' },
-                max_students: { type: 'number' },
-                is_delete: { type: 'boolean' }
+                dob: { type: 'string', format: 'date-time' },
+                email: { type: 'string',default:"student@gmail.com" },
+                phone: { type: 'string' ,default:"123456789"},
+                address: { type: 'string',default:"79 Dien bien phu, P.Dakao, Q1"  },
+                is_delete: { type: 'boolean' },
             },
         }
     }
@@ -115,7 +191,7 @@ export const get_by_id_error = {
 
 export const create_success = {
     status: 201,
-    description: 'Create class course success',
+    description: 'Create student course success',
     schema: {
         type: 'object',
         properties: {
@@ -127,7 +203,7 @@ export const create_success = {
             },
             message: {
                 type: 'string',
-                default:"Create new class success"
+                default:"Create new student success"
             }
         },
     }
@@ -158,22 +234,23 @@ export const create_error_bad ={
 }
 
 export const body_create={ 
-    description: 'Create a new class',
+    description: 'Create a new student',
     schema: {
       type: 'object',
       properties: {
         name: { type: 'string' },
-        teacher_id: { type: 'number' },
-        course_id: { type: 'number' },
-        max_students: { type: 'number'},
+        dob: { type: 'string', format: 'date-time'  },
+        email: {type: 'string' ,default:"student@gmail.com"},
+        phone: { type: 'string',default:"123456789"},
+        address: { type: 'string',default:"39 Dien bien phu, P.Dakao, Q1"},
       },
-      required: ['name', 'teacher', 'course_id', 'max_students']
+      required: []
     }
 }
 
 export const update_success ={
     status: 201,
-    description: 'Update class success',
+    description: 'Update student success',
     schema: {
         type: 'object',
         properties: {
@@ -185,7 +262,7 @@ export const update_success ={
             },
             message: {
                 type: 'string',
-                default:"Update class success"
+                default:"Update student success"
             }
         },
     }
@@ -203,7 +280,7 @@ export const update_not_found ={
             },
             message: {
                 type: 'string',
-                default:"Class with offer ID not found."
+                default:"student with offer ID not found."
             }
         },
         required: ['admin', 'message']
@@ -235,14 +312,15 @@ export const update_bad = {
 }
 
 export const body_update = { 
-    description: 'Update class',
+    description: 'Update student',
     schema: {
       type: 'object',
       properties: {
-        name: { type: 'string',default:"Class name" },
-        teacher: { type: 'string',default:"Bill gate" },
-        course_id: { type: 'number',default: 1 },
-        max_students: { type: 'number',default:100},
+        name: { type: 'string' },
+        dob: { type: 'string', format: 'date-time'  },
+        email: {type: 'string' ,default:"student-update@gmail.com"},
+        phone: { type: 'number'},
+        address: { type: 'string',default:"79 Dien bien phu, P.Dakao, Q1"},
       },
       required: []
     }
@@ -250,7 +328,7 @@ export const body_update = {
 
 export const delete_success ={
     status: 201,
-    description: 'Delete class success',
+    description: 'Delete student success',
     schema: {
         type: 'object',
         properties: {
@@ -262,7 +340,7 @@ export const delete_success ={
             },
             message: {
                 type: 'string',
-                default:"Delete class success"
+                default:"Delete student success"
             }
         },
     }
@@ -281,7 +359,7 @@ export const delete_not_found = {
             },
             message: {
                 type: 'string',
-                default:"Class with offer ID not found."
+                default:"student with offer ID not found."
             }
         },
         required: ['admin', 'message']

@@ -1,16 +1,15 @@
 
 export const get_success = {
     status: 200,
-    description: 'Get class success',
+    description: 'Get class member success',
     schema: {
         type: 'array',
         items: {
             type: 'object',
             properties: {
                 id: { type: 'number' },
-                name: { type: 'string' },
-                teacher: { type: 'string' },
-                max_students: { type: 'number' },
+                student: { type: 'object' },
+                class: { type: 'object' },
                 is_delete: { type: 'boolean' }
             },
         }
@@ -115,7 +114,7 @@ export const get_by_id_error = {
 
 export const create_success = {
     status: 201,
-    description: 'Create class course success',
+    description: 'Add class member success',
     schema: {
         type: 'object',
         properties: {
@@ -127,7 +126,7 @@ export const create_success = {
             },
             message: {
                 type: 'string',
-                default:"Create new class success"
+                default:"Add class member success"
             }
         },
     }
@@ -158,22 +157,20 @@ export const create_error_bad ={
 }
 
 export const body_create={ 
-    description: 'Create a new class',
+    description: 'Add class members',
     schema: {
       type: 'object',
       properties: {
-        name: { type: 'string' },
-        teacher_id: { type: 'number' },
-        course_id: { type: 'number' },
-        max_students: { type: 'number'},
+        class_id: { type: 'number' },
+        student_id: { type: 'number' },
       },
-      required: ['name', 'teacher', 'course_id', 'max_students']
+      required: []
     }
 }
 
 export const update_success ={
     status: 201,
-    description: 'Update class success',
+    description: 'Update class member success',
     schema: {
         type: 'object',
         properties: {
@@ -185,7 +182,7 @@ export const update_success ={
             },
             message: {
                 type: 'string',
-                default:"Update class success"
+                default:"Update class member success"
             }
         },
     }
@@ -203,10 +200,10 @@ export const update_not_found ={
             },
             message: {
                 type: 'string',
-                default:"Class with offer ID not found."
+                default:"Class member with offer ID not found."
             }
         },
-        required: ['admin', 'message']
+        required: []
     }
 }
 
@@ -235,14 +232,12 @@ export const update_bad = {
 }
 
 export const body_update = { 
-    description: 'Update class',
+    description: 'Update class member',
     schema: {
       type: 'object',
       properties: {
-        name: { type: 'string',default:"Class name" },
-        teacher: { type: 'string',default:"Bill gate" },
-        course_id: { type: 'number',default: 1 },
-        max_students: { type: 'number',default:100},
+        class_id: { type: 'number',default: 1 },
+        student_id: { type: 'number',default: 1 },
       },
       required: []
     }
@@ -250,7 +245,7 @@ export const body_update = {
 
 export const delete_success ={
     status: 201,
-    description: 'Delete class success',
+    description: 'Delete class member success',
     schema: {
         type: 'object',
         properties: {
@@ -262,7 +257,7 @@ export const delete_success ={
             },
             message: {
                 type: 'string',
-                default:"Delete class success"
+                default:"Delete class member success"
             }
         },
     }
@@ -281,7 +276,7 @@ export const delete_not_found = {
             },
             message: {
                 type: 'string',
-                default:"Class with offer ID not found."
+                default:"Class member with offer ID not found."
             }
         },
         required: ['admin', 'message']

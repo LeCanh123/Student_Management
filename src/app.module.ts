@@ -12,6 +12,10 @@ import { CourseModule } from './modules/course/course.module';
 import { RoleMiddlewareConfig } from './modules/middleware/role-config.middleware';
 import { ClassModule } from './modules/class/class.module';
 import { TeacherModule } from './modules/teacher/teacher.module';
+import { StudentModule } from './modules/student/student.module';
+import { MulterModule } from '@nestjs/platform-express';
+import { ClassMembersModule } from './modules/classMembers/class-members.module';
+
 
 @Module({
   imports: [TypeOrmModule.forRoot(config),
@@ -20,6 +24,11 @@ import { TeacherModule } from './modules/teacher/teacher.module';
     UserModule,
     CourseModule,
     ClassModule,
+    StudentModule,
+    ClassMembersModule,
+    MulterModule.register({
+      dest: './uploads',
+    }),
     JwtModule.register({
       // global: true,
       secret: process.env.JWT_SECRET_KEY || jwtConstants.secret,
