@@ -15,7 +15,9 @@ export class ClassService {
 
   async getAll() {
     try {
-      const data = await this.classRepository.find({ where: { is_delete: false } });
+      const data = await this.classRepository.find({ where: { is_delete: false } ,
+        relations: ['course','teacher'] 
+      });
       return {
         status: HttpStatus.OK,
         data
@@ -35,7 +37,9 @@ export class ClassService {
 
   async getOne(id: number) {
     try {
-      const data = await this.classRepository.find({ where: { id: id } });
+      const data = await this.classRepository.find({ where: { id: id },
+        relations: ['course','teacher'] 
+      });
       if (!data || data?.length == 0) {
         return {
           status: HttpStatus.NOT_FOUND,
