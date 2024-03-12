@@ -240,7 +240,7 @@ export const body_update = {
       type: 'object',
       properties: {
         name: { type: 'string',default:"Class name" },
-        teacher: { type: 'string',default:"Bill gate" },
+        teacher_id: { type: 'number',default: 1 },
         course_id: { type: 'number',default: 1 },
         max_students: { type: 'number',default:100},
       },
