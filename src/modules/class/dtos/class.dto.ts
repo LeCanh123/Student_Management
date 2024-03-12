@@ -1,4 +1,4 @@
-import { IsDate, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsDate, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export default class ClassDto {
     @IsString()
@@ -18,6 +18,10 @@ export default class ClassDto {
     course_id: number;
 
     @IsNumber()
-    @IsNotEmpty()
+    @IsOptional()
     teacher_id: number;
+
+    @IsNumber()
+    @IsOptional()
+    student_id: number;
 }
