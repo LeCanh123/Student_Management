@@ -7,7 +7,7 @@ export default class UpdateClassDto {
 
     @IsString()
     @IsOptional()
-    teacher: string;
+    teacher_id: number;
 
     @IsNumber()
     @IsOptional()

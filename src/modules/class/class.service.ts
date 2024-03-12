@@ -102,7 +102,7 @@ export class ClassService {
       }
       const updateClass = await this.classRepository.update(Number(id), {
         name: class_data.name,
-        // teacher: {id:class_data.teacher},
+        teacher: {id:class_data.teacher_id},
         course: { id: class_data.course_id },
         max_students: class_data.max_students
       });
