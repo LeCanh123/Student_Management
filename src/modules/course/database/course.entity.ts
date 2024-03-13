@@ -1,16 +1,19 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm"
 import { Class } from "src/modules/class/database/class.entity"
+import { ModuleCourse } from "src/modules/moduleCourse/database/modulecourse.entity"
 @Entity()
 export class Course {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column()
+    //Tên khoá học
+    @Column({ length: 100, })
     name: string
 
     @Column()
     description: string
 
+    //Thời gian đào tạo
     @Column()
     duration: number
 
@@ -20,9 +23,12 @@ export class Course {
     @Column()
     end_date: Date
 
-    @Column({ default: false })    
-    is_delete:Boolean
+    @Column({ default: true })    
+    status:Boolean
 
     @OneToMany(() => Class,(mainclass)=>mainclass.course)
     class: Class[]
+
+    @OneToMany(() => ModuleCourse,(modulecourse)=>modulecourse.course)
+    modulecourse: ModuleCourse[]
 }

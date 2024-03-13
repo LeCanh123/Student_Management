@@ -171,6 +171,63 @@ export const body_create={
     }
 }
 
+export const add_student_success = {
+    status: 201,
+    description: 'Add student success',
+    schema: {
+        type: 'object',
+        properties: {
+          success: {
+                type: 'boolean',
+                properties: {
+                },
+                default:true
+            },
+            message: {
+                type: 'string',
+                default:"Add student success"
+            }
+        },
+    }
+}
+
+export const add_student_error_bad ={
+    status: 400,
+    description: 'Error: Bad Request',
+    schema: {
+        type: 'object',
+        properties: {
+          error: {
+                type: 'string',
+                properties: {
+                },
+                default:"Bad Request"
+            },
+            message: {
+                type: 'string',
+                default:"Data is invalid"
+            },
+            statusCode:{
+              type:"number",
+              default:400
+            }
+        },
+    }
+}
+
+export const body_add_student={ 
+    description: 'Add student into class',
+    schema: {
+      type: 'object',
+      properties: {
+        student_id: { type: 'number' },
+        class_id: { type: 'number' },
+      },
+      required: ['student_id', 'class_id']
+    }
+}
+
+
 export const update_success ={
     status: 201,
     description: 'Update class success',

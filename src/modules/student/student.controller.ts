@@ -19,6 +19,7 @@ export class StudentController {
   @Get()
   @ApiResponse(get_success)
   @ApiResponse(get_error)
+  @ApiBearerAuth()
   async getAll(@Res() res: Response) {
     let result = await this.studentService.getAll();
     return res.status(result.status || HttpStatus.INTERNAL_SERVER_ERROR).json(result.data);
@@ -32,6 +33,7 @@ export class StudentController {
   @ApiBody(body_async_with_excel)
   @ApiResponse(async_with_excel_success)
   @ApiResponse(async_with_excel_failed)
+  @ApiBearerAuth()
   async async_With_Excel(@Res() res: Response,@UploadedFile() file) {
     console.log("file",file);
     if(file){
@@ -50,6 +52,7 @@ export class StudentController {
   @Get('search')
   @ApiResponse(search_success)
   @ApiResponse(search_server_error)
+  @ApiBearerAuth()
   async search(@Query('keyword') keyword: string, @Res() res: Response,) {
     console.log("keyword", keyword);
     const result = await this.studentService.search(keyword);
@@ -59,6 +62,7 @@ export class StudentController {
   @Get(':id')
   @ApiResponse(get_by_id_success)
   @ApiResponse(get_by_id_error)
+  @ApiBearerAuth()
   async getOne(@Res() res: Response, @Param('id') id: string) {
     let result = await this.studentService.getOne(Number(id));
     return res.status(result.status || HttpStatus.INTERNAL_SERVER_ERROR).json(result.data);

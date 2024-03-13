@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Class } from './database/class.entity';
 import ClassDto from './dtos/class.dto';
 import UpdateClassDto from './dtos/update-class.dto';
+import { Student } from '../student/database/student.entity';
 
 
 @Injectable()
@@ -11,6 +12,8 @@ export class ClassService {
   constructor(
     @InjectRepository(Class)
     private readonly classRepository: Repository<Class>,
+    @InjectRepository(Student)
+    private readonly studentRepository: Repository<Student>,
   ) { }
 
   async getAll() {
@@ -38,7 +41,7 @@ export class ClassService {
   async getOne(id: number) {
     try {
       const data = await this.classRepository.find({ where: { id: id },
-        relations: ['course','teacher'] 
+        relations: ['course','teacher','student'] 
       });
       if (!data || data?.length == 0) {
         return {
@@ -78,6 +81,28 @@ export class ClassService {
         data: {
           success: true,
           message: "Create new class success"
+        }
+      };
+    }
+    catch (error) {
+      return {
+        status: HttpStatus.BAD_REQUEST,
+        data: {
+          error: "Bad Request",
+          message: "Data is invalid. Please check and try again."
+        }
+      };
+    }
+  }
+
+  async add_student(data: any) {
+    try {
+      const newClass = await this.studentRepository.update(Number(data.student_id), {class:{id:data.class_id}});
+      return {
+        status: HttpStatus.CREATED,
+        data: {
+          success: true,
+          message: "Add student success"
         }
       };
     }

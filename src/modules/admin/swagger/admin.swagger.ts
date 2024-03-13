@@ -1,15 +1,25 @@
+import { diskStorage } from 'multer';
+import { v4 as uuidv4 } from 'uuid';
+import { FileInterceptor } from '@nestjs/platform-express';
+
 export const body_create = { 
     description: 'Create a new admin account',
     schema: {
-      type: 'object',
-      properties: {
-        username: { type: 'string' ,default:"admin"},
-        password: { type: 'string' ,default:"123456"},
-        email: { type: 'string' ,default:"admin@gmail.com" },
-        role: { type: 'number',default:0},
-      },
-      required: ['username', 'password', 'email', 'role']
-    }
+        type: 'object',
+        properties: {
+          username: { type: 'string' ,default:"admin"},
+          email: { type: 'string' ,default:"admin@gmail.com"},
+          fullname: { type: 'string',default:"Nguyen Van C"},
+          password: { type: 'string' ,default:"123456"},
+          phone :  { type: 'string' ,default:"+84123456780"},
+          avatar: {
+              type: 'string',
+              format: 'binary',
+            }
+  
+        },
+        required: ['username', 'password', 'email', 'fullname','phone']
+      }
 }
 
 export const create_success ={
@@ -56,3 +66,13 @@ export const create_bad ={
         },
     }
 }
+
+export const file_setup= FileInterceptor('avatar', {
+    storage: diskStorage({
+      destination: './uploads',
+      filename: (req, file, cb) => {
+        const filename = `${uuidv4()}-${file.originalname}`;
+        cb(null, filename);
+      },
+    }),
+})

@@ -1,6 +1,8 @@
 import { HttpStatus, Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { JwtService } from '@nestjs/jwt';
+import { RoleName } from '../role/database/role.entity';
+
 @Injectable()
 export class adminRoleMiddleware implements NestMiddleware {
   constructor(
@@ -11,12 +13,15 @@ export class adminRoleMiddleware implements NestMiddleware {
     try{
       if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
         const token = req.headers.authorization.slice(7);
+        console.log("token",token);
+        
         const veryfy=this.jwtService.verify(
           token,{
           secret:process.env.SECRET_kEY
           })
           console.log("veryfy",veryfy);
-          if(veryfy.role==0){
+          
+          if(veryfy.role==RoleName.ADMIN){
             next();
           }else{
             res.status(HttpStatus.FORBIDDEN).json({

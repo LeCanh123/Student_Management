@@ -1,31 +1,38 @@
 import { Class } from "src/modules/class/database/class.entity"
-import { ClassMembers } from "src/modules/classMembers/database/class-members.entity"
 import { Course } from "src/modules/course/database/course.entity"
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn } from "typeorm"
 
 @Entity()
 export class Student {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column()    
-    name: string
-
-    @Column()
-    dob: Date
-
     @Column({ unique: true })
     email: string
 
-    @Column({ unique: true })    
-    phone:number
+    @Column()    
+    name: string
+
+    @Column({ default: true })
+    status: boolean;
+
+    //Birth day
+    @Column()
+    dob: Date
+
+    @Column({ length: 15,unique: true })
+    phone: string
 
     @Column()    
     address:string
 
-    @Column({ default: false })    
-    is_delete:Boolean
+    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)'})
+    created_at: Date;
 
-    @OneToMany(() => ClassMembers,(class_members)=>class_members.student)
-    class_members: ClassMembers[]
+    @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)', onUpdate: 'CURRENT_TIMESTAMP(6)' })
+    updated_at: Date;
+
+    @ManyToOne(() => Class, (mainclass) => mainclass.student)
+    class: Class
+
 } 

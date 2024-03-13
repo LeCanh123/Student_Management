@@ -16,11 +16,11 @@ export class RoleMiddlewareConfig {
     consumer
       .apply(adminRoleMiddleware)
       .forRoutes( 
-                  { path: '/course*', method: RequestMethod.PUT},
-                  { path: '/course*', method: RequestMethod.POST},
-                  { path: '/teacher*', method: RequestMethod.ALL},
-                  { path: '/student*', method: RequestMethod.ALL},
-                  { path: '/admin/1', method: RequestMethod.ALL }
+                  // { path: '/course*', method: RequestMethod.PUT},
+                  // { path: '/course*', method: RequestMethod.POST},
+                  // { path: '/teacher*', method: RequestMethod.ALL},
+                  // { path: '/student*', method: RequestMethod.ALL},
+                  // { path: '/admin/1', method: RequestMethod.ALL }
                   
                   );
   }
