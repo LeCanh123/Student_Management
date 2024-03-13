@@ -19,7 +19,7 @@ export class StudentService {
 
   async getAll() {
     try {
-      const data = await this.studentRepository.find({ where: { is_delete: false } });
+      const data = await this.studentRepository.find({ where: { status: true } });
       return {
         status: HttpStatus.OK,
         data
@@ -81,7 +81,7 @@ export class StudentService {
         };
       }
       let checkPhone = await this.studentRepository.findBy({
-        phone:Number(student_data.phone)
+        phone:student_data.phone
       })
       if(checkPhone.length>0){
         return {
@@ -92,10 +92,7 @@ export class StudentService {
           }
         };
       }
-      const newstudent = await this.studentRepository.save({
-        ...student_data,
-        phone:Number(student_data.phone)
-      });
+      const newstudent = await this.studentRepository.save(student_data);
       return {
         status: HttpStatus.CREATED,
         data: {
@@ -153,7 +150,7 @@ export class StudentService {
           }
         };
       }
-      const updateStudent = await this.studentRepository.update(Number(id), {...student_data,phone:Number(student_data.phone)});
+      const updateStudent = await this.studentRepository.update(Number(id), {...student_data,phone:student_data.phone});
       return {
         status: HttpStatus.CREATED,
         data: {
@@ -210,7 +207,7 @@ export class StudentService {
         };
 
       }
-      const deleteStudent = await this.studentRepository.update(Number(id), { is_delete: true });
+      const deleteStudent = await this.studentRepository.update(Number(id), { status: false });
       return {
         status: HttpStatus.CREATED,
         data: {

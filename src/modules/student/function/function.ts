@@ -8,6 +8,7 @@ export async function mapData(item:any,studentRepository:any){
         email:item.email,
         phone:item.phone,
         address:item.address,
+        status:item.status,
   
       }
       let checkEmail = await studentRepository.findBy({

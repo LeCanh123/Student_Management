@@ -14,7 +14,7 @@ export class CourseService {
   ) {}
   async getAll() {
     try{
-      const data = await this.courseRepository.find({ where: { is_delete: false } });
+      const data = await this.courseRepository.find({ where: { status: true } });
       return {
         status:HttpStatus.OK,
         data
@@ -34,7 +34,7 @@ export class CourseService {
 
   async getOne(id:number) {
     try{
-      const data = await this.courseRepository.find({ where: { id: id } });
+      const data = await this.courseRepository.find({ where: { id: id }, relations: ['class'] });
       if(!data||data?.length==0){
         return {
           status:HttpStatus.NOT_FOUND,
@@ -147,7 +147,7 @@ export class CourseService {
         }};
         
       }
-        const deleteCourse = await this.courseRepository.update(Number(id),{is_delete:true});
+        const deleteCourse = await this.courseRepository.update(Number(id),{status:false});
         return {
           status:HttpStatus.CREATED,
           data:{

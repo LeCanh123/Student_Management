@@ -22,8 +22,8 @@ export class Teacher {
     @Column()    
     address:string
 
-    @Column({ default: false })    
-    is_delete:Boolean
+    @Column({ default: true })    
+    status:Boolean
 
     @OneToMany(() => Class,(mainclass)=>mainclass.teacher)
     class: Class[]

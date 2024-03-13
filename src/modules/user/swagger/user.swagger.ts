@@ -1,14 +1,25 @@
+import { diskStorage } from 'multer';
+import { v4 as uuidv4 } from 'uuid';
+import { FileInterceptor } from '@nestjs/platform-express';
+
+
 export const body_create={ 
     description: 'Create a new user account',
     schema: {
       type: 'object',
       properties: {
         username: { type: 'string' ,default:"user"},
-        password: { type: 'string' ,default:"123456"},
         email: { type: 'string' ,default:"username@gmail.com"},
-        role: { type: 'number',default:"1"},
+        fullname: { type: 'string',default:"Nguyen Van A"},
+        password: { type: 'string' ,default:"123456"},
+        phone :  { type: 'string' ,default:"+84123456789"},
+        avatar: {
+            type: 'string',
+            format: 'binary',
+          }
+
       },
-      required: ['username', 'password', 'email', 'role']
+      required: ['username', 'password', 'email', 'fullname','phone']
     }
 }
 
@@ -109,3 +120,13 @@ export const login_error={
         required: ['admin', 'message']
     }
 }
+
+export const file_setup= FileInterceptor('avatar', {
+    storage: diskStorage({
+      destination: './uploads',
+      filename: (req, file, cb) => {
+        const filename = `${uuidv4()}-${file.originalname}`;
+        cb(null, filename);
+      },
+    }),
+})

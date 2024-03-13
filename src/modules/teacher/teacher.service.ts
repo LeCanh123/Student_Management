@@ -15,7 +15,7 @@ export class TeacherService {
 
   async getAll() {
     try {
-      const data = await this.teacherRepository.find({ where: { is_delete: false } });
+      const data = await this.teacherRepository.find({ where: { status: true } });
       return {
         status: HttpStatus.OK,
         data
@@ -208,7 +208,7 @@ export class TeacherService {
         };
 
       }
-      const deleteCourse = await this.teacherRepository.update(Number(id), { is_delete: true });
+      const deleteCourse = await this.teacherRepository.update(Number(id), { status: false });
       return {
         status: HttpStatus.CREATED,
         data: {
