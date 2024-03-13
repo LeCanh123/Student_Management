@@ -18,9 +18,11 @@ export class ClassService {
 
   async getAll() {
     try {
-      const data = await this.classRepository.find({ where: { is_delete: false } ,
-        relations: ['course','teacher'] 
+      const data = await this.classRepository.find({ where: { status: true } ,
+        relations: ['course','teacher','student'] 
       });
+      console.log("data",data);
+      
       return {
         status: HttpStatus.OK,
         data
@@ -71,6 +73,16 @@ export class ClassService {
 
   async create(class_data: ClassDto) {
     try {
+      let checkClass= await this.classRepository.find({where:{name:class_data.name,status:true}})
+      if(checkClass.length>0){
+        return {
+          status: HttpStatus.BAD_REQUEST,
+          data: {
+            error: "Bad Request",
+            message: "Class name already exists"
+          }
+        };
+      }
       const newClass = await this.classRepository.save({
         ...class_data,
         course: { id: class_data.course_id },
@@ -158,6 +170,9 @@ export class ClassService {
     try {
       const classes = await this.classRepository
         .createQueryBuilder('class')
+        .leftJoinAndSelect('class.course', 'course')
+        .leftJoinAndSelect('class.teacher', 'teacher')
+        .leftJoinAndSelect('class.student', 'student')
         .where('class.name LIKE :keyword', { keyword: `%${keyword}%` })
         .getMany();
 
@@ -191,7 +206,7 @@ export class ClassService {
         };
 
       }
-      const deleteCourse = await this.classRepository.update(Number(id), { is_delete: true });
+      const deleteCourse = await this.classRepository.update(Number(id), { status: true });
       return {
         status: HttpStatus.CREATED,
         data: {

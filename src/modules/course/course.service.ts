@@ -14,7 +14,7 @@ export class CourseService {
   ) {}
   async getAll() {
     try{
-      const data = await this.courseRepository.find({ where: { status: true } });
+      const data = await this.courseRepository.find({ where: { status: true } ,relations: ['class','modulecourse'] });
       return {
         status:HttpStatus.OK,
         data
@@ -34,7 +34,7 @@ export class CourseService {
 
   async getOne(id:number) {
     try{
-      const data = await this.courseRepository.find({ where: { id: id }, relations: ['class'] });
+      const data = await this.courseRepository.find({ where: { id: id },relations: ['class','modulecourse']  });
       if(!data||data?.length==0){
         return {
           status:HttpStatus.NOT_FOUND,
@@ -114,6 +114,8 @@ export class CourseService {
     try{
       const courses = await this.courseRepository
       .createQueryBuilder('course')
+      .leftJoinAndSelect('course.class', 'class')
+      .leftJoinAndSelect('course.modulecourse', 'modulecourse')
       .where('course.name LIKE :keyword', { keyword: `%${keyword}%` })
       .getMany();
 

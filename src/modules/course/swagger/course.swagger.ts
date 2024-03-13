@@ -1,5 +1,7 @@
 
-export const get_success ={
+export const Api={
+    
+get_success :{
     status: 200,
     description: 'Get course success',
     schema: {
@@ -18,9 +20,8 @@ export const get_success ={
             required: ['id', 'name', 'description', 'duration', 'start_date', 'end_date', 'is_delete']
         }
     }
-}
-
-export const get_error = {
+},
+get_error : {
     status: 500,
     description: 'Internal Server Error',
     schema: {
@@ -38,9 +39,8 @@ export const get_error = {
             }
         },
     }
-}
-
-export const search_success ={
+},
+search_success :{
     status: 200,
     description: 'Search course success',
     schema: {
@@ -59,8 +59,8 @@ export const search_success ={
             required: ['id', 'name', 'description', 'duration', 'start_date', 'end_date', 'is_delete']
         }
     }
-}
-export const search_error= {
+},
+search_error: {
     status: 500,
     description: 'Internal Server Error',
     schema: {
@@ -78,10 +78,8 @@ export const search_error= {
             }
         },
     }
-}
-
-
-export const get_by_id_success={
+},
+get_by_id_success:{
     status: 200,
     description: 'Get course success',
     schema: {
@@ -100,9 +98,8 @@ export const get_by_id_success={
             required: ['id', 'name', 'description', 'duration', 'start_date', 'end_date', 'is_delete']
         }
     }
-}
-
-export const get_by_id_error={
+},
+get_by_id_error:{
     status: 500,
     description: 'Internal Server Error',
     schema: {
@@ -120,9 +117,8 @@ export const get_by_id_error={
             }
         },
     }
-}
-
-export const create_success={
+},
+create_success:{
     status: 201,
     description: 'Create new course success',
     schema: {
@@ -140,9 +136,8 @@ export const create_success={
             }
         },
     }
-}
-
-export const create_error={
+},
+create_error:{
     status: 400,
     description: 'Error: Bad Request',
     schema: {
@@ -164,24 +159,22 @@ export const create_error={
             }
         },
     }
-}
-
-export const body_create={ 
+},
+body_create:{ 
     description: 'Create a new course',
     schema: {
       type: 'object',
       properties: {
-        name: { type: 'string' },
-        description: { type: 'string' },
-        duration: { type: 'number' },
+        name: { type: 'string',default:"Course name" },
+        description: { type: 'string',default: "Course description" },
+        duration: { type: 'number' ,default:100},
         start_date: { type: 'string', format: 'date-time' },
         end_date: { type: 'string', format: 'date-time' }
       },
       required: ['name', 'description', 'duration', 'start_date', 'end_date']
     }
-}
-
-export const update_success = {
+},
+update_success : {
     status: 201,
     description: 'Update course success',
     schema: {
@@ -199,9 +192,8 @@ export const update_success = {
             }
         },
     }
-}
-
-export const update_not_found={
+},
+update_not_found:{
     status: 404,
     description: 'Not Found',
     schema: {
@@ -218,9 +210,8 @@ export const update_not_found={
         },
         required: ['admin', 'message']
     }
-}
-
-export const update_bad={
+},
+update_bad:{
     status: 400,
     description: 'Error: Bad Request',
     schema: {
@@ -242,25 +233,22 @@ export const update_bad={
             }
         },
     }
-}
-
-export const body_update={ 
+},
+body_update:{ 
     description: 'Update course',
     schema: {
       type: 'object',
       properties: {
-        name: { type: 'string' },
-        description: { type: 'string' },
-        duration: { type: 'number' },
+        name: { type: 'string' ,default:"Course name update"},
+        description: { type: 'string', default:"Course description update" },
+        duration: { type: 'number' ,default:200},
         start_date: { type: 'string', format: 'date-time' },
         end_date: { type: 'string', format: 'date-time' }
       },
       required: ['name', 'description', 'duration', 'start_date', 'end_date']
     }
-}
-
-
-export const delete_success={
+},
+delete_success:{
     status: 201,
     description: 'Delete course success',
     schema: {
@@ -278,9 +266,8 @@ export const delete_success={
             }
         },
     }
-}
-
-export const delete_not_found={
+},
+delete_not_found:{
     status: 404,
     description: 'Not Found',
     schema: {
@@ -295,11 +282,10 @@ export const delete_not_found={
                 default:"Course with offer ID not found."
             }
         },
-        required: ['admin', 'message']
+        required: []
     }
-}
-
-export const delete_bad={
+},
+delete_bad:{
     status: 400,
     description: 'Error: Bad Request',
     schema: {
@@ -321,4 +307,5 @@ export const delete_bad={
             }
         },
     }
-  }
+},
+ }

@@ -8,14 +8,14 @@ export class Class {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column({ unique: true })    
+    @Column()    
     name: string
 
     @Column()
     max_students: number
 
-    @Column({ default: false })    
-    is_delete:Boolean
+    @Column({ default: true })    
+    status:Boolean
 
     @ManyToOne(() => Course, (course) => course.class)
     course: Course

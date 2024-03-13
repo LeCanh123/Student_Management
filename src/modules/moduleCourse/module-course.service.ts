@@ -1,9 +1,9 @@
 import { Injectable, HttpStatus } from '@nestjs/common';
 import { InjectRepository, } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import StudentDto from './dtos/student.dto';
-import UpdateStudentDto from './dtos/update-student.dto';
-import { Student } from './database/student.entity';
+import ModuleCourseDto from './dtos/module-course.dto';
+import UpdateModuleCourseDto from './dtos/update-module-course.dto';
+import { ModuleCourse } from './database/module-course.entity'; 
 import * as xlsx from 'xlsx';
 import { delete_file } from 'src/common/comon';
 import { mapData } from './function/function';
@@ -11,15 +11,17 @@ const path = require('path');
 
 
 @Injectable()
-export class StudentService {
+export class ModuleCourseService {
   constructor(
-    @InjectRepository(Student)
-    private readonly studentRepository: Repository<Student>,
+    @InjectRepository(ModuleCourse)
+    private readonly moduleCourseRepository: Repository<ModuleCourse>,
   ) { }
 
   async getAll() {
     try {
-      const data = await this.studentRepository.find({ where: { status: true },relations: ['class','class.course'] });
+      const data = await this.moduleCourseRepository.find({ where: { status: true } ,
+        relations: ['course'] 
+      });
       return {
         status: HttpStatus.OK,
         data
@@ -39,13 +41,13 @@ export class StudentService {
 
   async getOne(id: number) {
     try {
-      const data = await this.studentRepository.find({ where: { id: id },relations: ['class','class.course'] });
+      const data = await this.moduleCourseRepository.find({ where: { id: id } ,relations: ['course'] });
       if (!data || data?.length == 0) {
         return {
           status: HttpStatus.NOT_FOUND,
           data: {
             error: "Not Found",
-            message: "Student with offer ID not found."
+            message: "Module course with offer ID not found."
           }
         };
       }
@@ -66,38 +68,14 @@ export class StudentService {
 
   }
 
-  async create(student_data: StudentDto) {
+  async create(module_course_data: ModuleCourseDto) {
     try {
-      let checkEmail = await this.studentRepository.findBy({
-        email:student_data.email
-      })
-      if(checkEmail.length>0){
-        return {
-          status: HttpStatus.BAD_REQUEST,
-          data: {
-            error: "Bad Request",
-            message: "Email already exists"
-          }
-        };
-      }
-      let checkPhone = await this.studentRepository.findBy({
-        phone:student_data.phone
-      })
-      if(checkPhone.length>0){
-        return {
-          status: HttpStatus.BAD_REQUEST,
-          data: {
-            error: "Bad Request",
-            message: "Phone number already exists"
-          }
-        };
-      }
-      const newstudent = await this.studentRepository.save(student_data);
+      const newModuleCourse = await this.moduleCourseRepository.save(module_course_data);
       return {
         status: HttpStatus.CREATED,
         data: {
           success: true,
-          message: "Create new student success"
+          message: "Create new module course success"
         }
       };
     }
@@ -112,45 +90,16 @@ export class StudentService {
     }
   }
 
-  async update(student_data: UpdateStudentDto, id: number) {
+  async update(module_course_data: UpdateModuleCourseDto, id: number) {
     try {
-      const findStudent = await this.studentRepository.findOne({ where: { id: id } });
-      if (!findStudent) {
-        return {
-          status: HttpStatus.NOT_FOUND,
-          data: {
-            error: "Not Found",
-            message: "Student with offer ID not found."
-          }
-        };
-      }
-      let checkEmail = await this.studentRepository.createQueryBuilder('student')
-      .where('student.email = :email', { email:student_data.email })
-      .andWhere('student.id != :id', { id })
-      .getMany();
-      if(checkEmail.length>0){
-        return {
-          status: HttpStatus.BAD_REQUEST,
-          data: {
-            error: "Bad Request",
-            message: "Email already exists"
-          }
-        };
-      }
-      let checkPhone = await this.studentRepository.createQueryBuilder('student')
-      .where('student.phone = :phone', { phone:student_data.phone })
-      .andWhere('student.id != :id', { id })
-      .getMany();
-      if(checkPhone.length>0){
-        return {
-          status: HttpStatus.BAD_REQUEST,
-          data: {
-            error: "Bad Request",
-            message: "Phone number already exists"
-          }
-        };
-      }
-      const updateStudent = await this.studentRepository.update(Number(id), {...student_data,phone:student_data.phone});
+  
+      const updateModuleCourse = await this.moduleCourseRepository.update(Number(id), {
+        name:module_course_data.name,
+        duration:module_course_data.duration,
+        course:{
+          id:module_course_data.course_id
+        }
+      });
       return {
         status: HttpStatus.CREATED,
         data: {
@@ -172,16 +121,15 @@ export class StudentService {
 
   async search(keyword: string) {
     try {
-      const students = await this.studentRepository
-        .createQueryBuilder('student')
-        .leftJoinAndSelect('student.class', 'class')
-        .leftJoinAndSelect('class.course', 'course')
-        .where('student.name LIKE :keyword', { keyword: `%${keyword}%` })
+      const moduleCourse = await this.moduleCourseRepository
+        .createQueryBuilder('moduleCourse')
+        .leftJoinAndSelect('moduleCourse.course', 'course')
+        .where('moduleCourse.name LIKE :keyword', { keyword: `%${keyword}%` })
         .getMany();
 
       return {
         status: HttpStatus.OK,
-        data: students
+        data: moduleCourse
       };
     }
     catch (error) {
@@ -198,7 +146,7 @@ export class StudentService {
 
   async delete(id: number) {
     try {
-      const findstudent = await this.studentRepository.findOne({ where: { id: id } });
+      const findstudent = await this.moduleCourseRepository.findOne({ where: { id: id } });
       if (!findstudent) {
         return {
           status: HttpStatus.NOT_FOUND,
@@ -209,7 +157,7 @@ export class StudentService {
         };
 
       }
-      const deleteStudent = await this.studentRepository.update(Number(id), { status: false });
+      const deleteStudent = await this.moduleCourseRepository.update(Number(id), { status: false });
       return {
         status: HttpStatus.CREATED,
         data: {
@@ -235,9 +183,9 @@ export class StudentService {
       const workbook = xlsx.readFile(absolutePath+"/"+filepath.path);
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
       const data:any = xlsx.utils.sheet_to_json(worksheet);
-      let studentRepository=this.studentRepository
+      let moduleCourseRepository=this.moduleCourseRepository
       for (const item of data) {
-        mapData(item,studentRepository)
+        mapData(item,moduleCourseRepository)
       }
       let finalPAth=`${absolutePath}/${filepath.path}`
       delete_file(finalPAth)

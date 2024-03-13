@@ -3,11 +3,7 @@ import { CourseService } from './course.service';
 import { Response } from 'express';
 import { ApiBody, ApiTags, ApiBearerAuth, ApiParam, ApiResponse } from '@nestjs/swagger';
 import CourseDto from './dtos/course.dto';
-import {
-  body_create, body_update, create_error, create_success, delete_bad, delete_not_found,
-  delete_success, get_by_id_error, get_by_id_success, get_error, get_success, search_error,
-  search_success, update_bad, update_not_found, update_success
-} from './swagger/course.swagger';
+import {Api} from './swagger/course.swagger';
 @ApiTags('Course')
 @Controller({ path: 'course', version: '' })
 export class CourseController {
@@ -15,8 +11,8 @@ export class CourseController {
 
   @Version('')
   @Get()
-  @ApiResponse(get_success)
-  @ApiResponse(get_error)
+  @ApiResponse(Api.get_success)
+  @ApiResponse(Api.get_error)
   @ApiBearerAuth()
   async getAll(@Res() res: Response) {
     let result = await this.courseService.getAll();
@@ -24,8 +20,8 @@ export class CourseController {
   }
 
   @Get('search')
-  @ApiResponse(search_success)
-  @ApiResponse(search_error)
+  @ApiResponse(Api.search_success)
+  @ApiResponse(Api.search_error)
   @ApiBearerAuth()
   async search(@Query('keyword') keyword: string, @Res() res: Response,) {
     console.log("keyword", keyword);
@@ -34,8 +30,8 @@ export class CourseController {
   }
 
   @Get(':id')
-  @ApiResponse(get_by_id_success)
-  @ApiResponse(get_by_id_error)
+  @ApiResponse(Api.get_by_id_success)
+  @ApiResponse(Api.get_by_id_error)
   @ApiBearerAuth()
   async getOne(@Res() res: Response, @Param('id') id: string) {
     let result = await this.courseService.getOne(Number(id));
@@ -44,9 +40,9 @@ export class CourseController {
 
 
   @Post()
-  @ApiResponse(create_success)
-  @ApiResponse(create_error)
-  @ApiBody(body_create)
+  @ApiResponse(Api.create_success)
+  @ApiResponse(Api.create_error)
+  @ApiBody(Api.body_create)
   @ApiBearerAuth()
   async create(@Body() course: CourseDto, @Res() res: Response): Promise<any> {
     let result = await this.courseService.create(course);
@@ -55,10 +51,10 @@ export class CourseController {
 
 
   @Put(':id')
-  @ApiResponse(update_success)
-  @ApiResponse(update_not_found)
-  @ApiResponse(update_bad)
-  @ApiBody(body_update)
+  @ApiResponse(Api.update_success)
+  @ApiResponse(Api.update_not_found)
+  @ApiResponse(Api.update_bad)
+  @ApiBody(Api.body_update)
   @ApiParam({ name: 'id', description: 'ID of the course', type: 'string' })
   @ApiBearerAuth()
   async update(@Param('id') id: string, @Body() course: any, @Res() res: Response): Promise<any> {
@@ -69,9 +65,9 @@ export class CourseController {
   }
 
   @Delete(':id')
-  @ApiResponse(delete_success)
-  @ApiResponse(delete_not_found)
-  @ApiResponse(delete_bad)
+  @ApiResponse(Api.delete_success)
+  @ApiResponse(Api.delete_not_found)
+  @ApiResponse(Api.delete_bad)
   @ApiParam({ name: 'id', description: 'ID of the course', type: 'string' })
   @ApiBearerAuth()
   async delete(@Param('id') id: string, @Res() res: Response): Promise<any> {

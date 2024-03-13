@@ -14,6 +14,9 @@ export class ModuleCourse {
     @Column()
     duration: number
 
+    @Column({ default: true })
+    status: boolean;
+
     @ManyToOne(() => Course, (course) => course.modulecourse)
     course: Course
 }

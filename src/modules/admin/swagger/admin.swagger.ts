@@ -2,6 +2,7 @@ import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import { FileInterceptor } from '@nestjs/platform-express';
 
+export const Api={}
 export const body_create = { 
     description: 'Create a new admin account',
     schema: {

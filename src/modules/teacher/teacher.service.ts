@@ -15,7 +15,7 @@ export class TeacherService {
 
   async getAll() {
     try {
-      const data = await this.teacherRepository.find({ where: { status: true } });
+      const data = await this.teacherRepository.find({ where: { status: true }, relations: ['class']  });
       return {
         status: HttpStatus.OK,
         data
@@ -37,7 +37,7 @@ export class TeacherService {
 
   async getOne(id: number) {
     try {
-      const data = await this.teacherRepository.find({ where: { id: id } });
+      const data = await this.teacherRepository.find({ where: { id: id },relations: ['class'] });
       if (!data || data?.length == 0) {
         return {
           status: HttpStatus.NOT_FOUND,
@@ -175,6 +175,7 @@ export class TeacherService {
     try {
       const teachers = await this.teacherRepository
         .createQueryBuilder('teacher')
+        .leftJoinAndSelect('teacher.class', 'class')
         .where('teacher.name LIKE :keyword', { keyword: `%${keyword}%` })
         .getMany();
 

@@ -15,6 +15,7 @@ import { StudentModule } from './modules/student/student.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { Role } from './modules/role/database/role.entity';
 import { AdminModule } from './modules/admin/admin.module';
+import { ModuleCourseModule } from './modules/moduleCourse/module-course.module';
 
 
 @Module({
@@ -22,7 +23,7 @@ import { AdminModule } from './modules/admin/admin.module';
     Role,
     UserModule,
     AdminModule, 
-    
+    ModuleCourseModule,
     TeacherModule,
     CourseModule,
     ClassModule,
