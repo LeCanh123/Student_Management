@@ -3,7 +3,7 @@ import { CourseService } from './course.service';
 import { Response } from 'express';
 import { ApiBody, ApiTags, ApiBearerAuth, ApiParam, ApiResponse } from '@nestjs/swagger';
 import CourseDto from './dtos/course.dto';
-import {Api} from './swagger/course.swagger';
+import { Api } from './swagger/course.swagger';
 @ApiTags('Course')
 @Controller({ path: 'course', version: '' })
 export class CourseController {

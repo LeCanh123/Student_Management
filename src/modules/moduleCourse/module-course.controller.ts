@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, Res, HttpStatus, Version, Put, Param, Dele
 import { ModuleCourseService } from './module-course.service';
 import { Response } from 'express';
 import { ApiBody, ApiTags, ApiBearerAuth, ApiParam, ApiResponse, ApiConsumes } from '@nestjs/swagger';
-import {Api,file_setup} from './swagger/module-course.swagger';
+import { Api, file_setup } from './swagger/module-course.swagger';
 import ModuleCourseDto from './dtos/module-course.dto';
 
 @ApiTags('ModuleCourse')

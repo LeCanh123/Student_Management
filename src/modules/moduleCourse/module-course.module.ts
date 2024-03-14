@@ -10,4 +10,4 @@ require('dotenv').config();
   providers: [ModuleCourseService],
   exports: [ModuleCourseService],
 })
-export class ModuleCourseModule {}
+export class ModuleCourseModule { }

@@ -3,7 +3,7 @@ import { InjectRepository, } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import ModuleCourseDto from './dtos/module-course.dto';
 import UpdateModuleCourseDto from './dtos/update-module-course.dto';
-import { ModuleCourse } from './database/module-course.entity'; 
+import { ModuleCourse } from './database/module-course.entity';
 import * as xlsx from 'xlsx';
 import { delete_file } from 'src/common/comon';
 import { mapData } from './function/function';
@@ -19,8 +19,9 @@ export class ModuleCourseService {
 
   async getAll() {
     try {
-      const data = await this.moduleCourseRepository.find({ where: { status: true } ,
-        relations: ['course'] 
+      const data = await this.moduleCourseRepository.find({
+        where: { status: true },
+        relations: ['course']
       });
       return {
         status: HttpStatus.OK,
@@ -41,7 +42,7 @@ export class ModuleCourseService {
 
   async getOne(id: number) {
     try {
-      const data = await this.moduleCourseRepository.find({ where: { id: id } ,relations: ['course'] });
+      const data = await this.moduleCourseRepository.find({ where: { id: id }, relations: ['course'] });
       if (!data || data?.length == 0) {
         return {
           status: HttpStatus.NOT_FOUND,
@@ -92,12 +93,12 @@ export class ModuleCourseService {
 
   async update(module_course_data: UpdateModuleCourseDto, id: number) {
     try {
-  
+
       const updateModuleCourse = await this.moduleCourseRepository.update(Number(id), {
-        name:module_course_data.name,
-        duration:module_course_data.duration,
-        course:{
-          id:module_course_data.course_id
+        name: module_course_data.name,
+        duration: module_course_data.duration,
+        course: {
+          id: module_course_data.course_id
         }
       });
       return {
@@ -177,17 +178,17 @@ export class ModuleCourseService {
     }
   }
 
-  async create_with_exel(filepath:any) {
+  async create_with_exel(filepath: any) {
     try {
       const absolutePath = path.resolve();
-      const workbook = xlsx.readFile(absolutePath+"/"+filepath.path);
+      const workbook = xlsx.readFile(absolutePath + "/" + filepath.path);
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-      const data:any = xlsx.utils.sheet_to_json(worksheet);
-      let moduleCourseRepository=this.moduleCourseRepository
+      const data: any = xlsx.utils.sheet_to_json(worksheet);
+      let moduleCourseRepository = this.moduleCourseRepository
       for (const item of data) {
-        mapData(item,moduleCourseRepository)
+        mapData(item, moduleCourseRepository)
       }
-      let finalPAth=`${absolutePath}/${filepath.path}`
+      let finalPAth = `${absolutePath}/${filepath.path}`
       delete_file(finalPAth)
       return {
         status: HttpStatus.CREATED,
