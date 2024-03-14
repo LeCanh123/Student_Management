@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm"
 import { Class } from "src/modules/class/database/class.entity"
-import { ModuleCourse } from "src/modules/moduleCourse/database/modulecourse.entity"
+import { ModuleCourse } from "src/modules/moduleCourse/database/module-course.entity"
 @Entity()
 export class Course {
     @PrimaryGeneratedColumn()

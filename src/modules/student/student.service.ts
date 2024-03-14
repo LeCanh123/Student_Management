@@ -19,7 +19,7 @@ export class StudentService {
 
   async getAll() {
     try {
-      const data = await this.studentRepository.find({ where: { status: true } });
+      const data = await this.studentRepository.find({ where: { status: true },relations: ['class','class.course'] });
       return {
         status: HttpStatus.OK,
         data
@@ -39,7 +39,7 @@ export class StudentService {
 
   async getOne(id: number) {
     try {
-      const data = await this.studentRepository.find({ where: { id: id } });
+      const data = await this.studentRepository.find({ where: { id: id },relations: ['class','class.course'] });
       if (!data || data?.length == 0) {
         return {
           status: HttpStatus.NOT_FOUND,
@@ -174,6 +174,8 @@ export class StudentService {
     try {
       const students = await this.studentRepository
         .createQueryBuilder('student')
+        .leftJoinAndSelect('student.class', 'class')
+        .leftJoinAndSelect('class.course', 'course')
         .where('student.name LIKE :keyword', { keyword: `%${keyword}%` })
         .getMany();
 

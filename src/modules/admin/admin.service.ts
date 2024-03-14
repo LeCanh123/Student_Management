@@ -1,6 +1,6 @@
-import { Injectable ,HttpStatus} from '@nestjs/common';
+import { Injectable, HttpStatus } from '@nestjs/common';
 import { InjectRepository, } from '@nestjs/typeorm';
-import { User } from '../user/database/user.entity'; 
+import { User } from '../user/database/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -15,9 +15,9 @@ export class AdminService {
     @InjectRepository(Role)
     private readonly roleRepository: Repository<Role>,
     private jwtService: JwtService,
-  ) {}
-  async create(admin:UserDto) {
-    try{
+  ) { }
+  async create(admin: UserDto) {
+    try {
       const salt = await bcrypt.genSalt();
       const hashPassword = await bcrypt.hash(admin.password, salt);
       admin.password = hashPassword;
@@ -27,23 +27,25 @@ export class AdminService {
       }
       const role = await this.roleRepository.find({ where: { role_name: CreateRole[0].role_name } });
 
-        const newAdmin = await this.adminRepository.save({...admin,role: [role[0]]});
-        return {
-          status:HttpStatus.OK,
-          data:{
-            admin:newAdmin,
-            message:"Create new admin success"
-          }};
-    }
-    catch(error){
+      const newAdmin = await this.adminRepository.save({ ...admin, role: [role[0]] });
       return {
-        status:HttpStatus.BAD_REQUEST,
-        data:{
-          message:"Create new admin failed"
-      }};
+        status: HttpStatus.OK,
+        data: {
+          admin: newAdmin,
+          message: "Create new admin success"
+        }
+      };
+    }
+    catch (error) {
+      return {
+        status: HttpStatus.BAD_REQUEST,
+        data: {
+          message: "Create new admin failed"
+        }
+      };
     }
 
-    
+
 
   }
 }

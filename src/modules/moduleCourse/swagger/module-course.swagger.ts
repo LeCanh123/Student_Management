@@ -1,22 +1,36 @@
-export const Api={
-    get_success:{
+import { diskStorage } from 'multer';
+import { v4 as uuidv4 } from 'uuid';
+import { FileInterceptor } from '@nestjs/platform-express';
+
+export const file_setup = FileInterceptor('file', {
+    storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, cb) => {
+            const filename = `${uuidv4()}-${file.originalname}`;
+            cb(null, filename);
+        },
+    }),
+})
+
+export const Api = {
+    get_success: {
         status: 200,
-        description: 'Get class success',
+        description: 'Get module course success',
         schema: {
             type: 'array',
             items: {
                 type: 'object',
                 properties: {
                     id: { type: 'number' },
-                    name: { type: 'string' },
-                    teacher: { type: 'string' },
-                    max_students: { type: 'number' },
-                    is_delete: { type: 'boolean' }
+                    name: { type: 'string', default: "Module course name" },
+                    duration: { type: 'number', default: 100 },
+                    status: { type: 'boolean', default: true },
+                    course: {}
                 },
             }
         }
     },
-    get_error:{
+    get_error: {
         status: 500,
         description: 'Internal Server Error',
         schema: {
@@ -35,24 +49,75 @@ export const Api={
             },
         }
     },
-    search_success:{
+    async_with_excel_success: {
         status: 200,
-        description: 'Search class success',
+        description: 'Get course success',
+        schema: {
+            type: 'array',
+            items: {
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean', default: true },
+                    message: { type: 'string', default: "Async student success" },
+
+                },
+            }
+        }
+    },
+    async_with_excel_failed: {
+        status: 400,
+        description: 'Error: Bad Request',
+        schema: {
+            type: 'object',
+            properties: {
+                error: {
+                    type: 'string',
+                    properties: {
+                    },
+                    default: "Bad Request"
+                },
+                message: {
+                    type: 'string',
+                    default: "Data is invalid"
+                },
+                statusCode: {
+                    type: "number",
+                    default: 400
+                }
+            },
+        }
+    },
+    body_async_with_excel: {
+        description: 'Async student with exel',
+        schema: {
+            type: 'object',
+            properties: {
+                file: {
+                    type: 'string',
+                    format: 'binary',
+                }
+            },
+            required: []
+        }
+    },
+    search_success: {
+        status: 200,
+        description: 'Search module course success',
         schema: {
             type: 'array',
             items: {
                 type: 'object',
                 properties: {
                     id: { type: 'number' },
-                    name: { type: 'string' },
-                    teacher: { type: 'string' },
-                    max_students: { type: 'number' },
-                    is_delete: { type: 'boolean' }
+                    name: { type: 'string', default: "Module course name" },
+                    duration: { type: 'number', default: 100 },
+                    status: { type: 'boolean', default: true },
+                    course: {}
                 },
             }
         }
     },
-    search_server_error:{
+    search_server_error: {
         status: 500,
         description: 'Internal Server Error',
         schema: {
@@ -71,170 +136,117 @@ export const Api={
             },
         }
     },
-    get_by_id_success:{
+    get_by_id_success: {
         status: 200,
-        description: 'Get class success',
+        description: 'Get module course success',
         schema: {
             type: 'array',
             items: {
                 type: 'object',
                 properties: {
                     id: { type: 'number' },
-                    name: { type: 'string' },
-                    teacher: { type: 'string' },
-                    max_students: { type: 'number' },
-                    is_delete: { type: 'boolean' }
+                    name: { type: 'string', default: "Module course name" },
+                    duration: { type: 'number', default: 100 },
+                    status: { type: 'boolean', default: true },
+                    course: {}
                 },
             }
         }
     },
-    get_by_id_error:{
+    get_by_id_error: {
         status: 500,
         description: 'Internal Server Error',
         schema: {
             type: 'object',
             properties: {
-              error: {
+                error: {
                     type: 'string',
                     properties: {
                     },
-                    default:"error"
+                    default: "error"
                 },
                 message: {
                     type: 'string',
-                    default:"Internal Server Error"
+                    default: "Internal Server Error"
                 }
             },
         }
     },
-    create_success:{
+    create_success: {
         status: 201,
-        description: 'Create class course success',
+        description: 'Create module course success',
         schema: {
             type: 'object',
             properties: {
-              success: {
+                success: {
                     type: 'boolean',
                     properties: {
                     },
-                    default:true
+                    default: true
                 },
                 message: {
                     type: 'string',
-                    default:"Create new class success"
+                    default: "Create new module course success"
                 }
             },
         }
     },
-    create_error_bad :{
+    create_error_bad: {
         status: 400,
         description: 'Error: Bad Request',
         schema: {
             type: 'object',
             properties: {
-              error: {
+                error: {
                     type: 'string',
                     properties: {
                     },
-                    default:"Bad Request"
+                    default: "Bad Request"
                 },
                 message: {
                     type: 'string',
-                    default:"Data is invalid"
+                    default: "Data is invalid"
                 },
-                statusCode:{
-                  type:"number",
-                  default:400
+                statusCode: {
+                    type: "number",
+                    default: 400
                 }
             },
         }
     },
-    body_create:{ 
-        description: 'Create a new class',
-        schema: {
-          type: 'object',
-          properties: {
-            name: { type: 'string' ,default :"Class Name"},
-            teacher_id: { type: 'number', default:1 },
-            course_id: { type: 'number', default:1 },
-            max_students: { type: 'number', default:10},
-          },
-          required: ['name', 'teacher', 'course_id', 'max_students']
-        }
-    },
-    add_student_success:{
-        status: 201,
-        description: 'Add class success',
+    body_create: {
+        description: 'Create a new module course',
         schema: {
             type: 'object',
             properties: {
-              success: {
+                name: { type: 'string' },
+                duration: { type: 'number', default: 100 },
+                course_id: { type: 'number', default: 1 },
+
+            },
+            required: []
+        }
+    },
+    update_success: {
+        status: 200,
+        description: 'Update module course success',
+        schema: {
+            type: 'object',
+            properties: {
+                success: {
                     type: 'boolean',
                     properties: {
                     },
-                    default:true
+                    default: true
                 },
                 message: {
                     type: 'string',
-                    default:"Add class success"
+                    default: "Update module course success"
                 }
             },
         }
     },
-    add_student_error_bad :{
-        status: 400,
-        description: 'Error: Bad Request',
-        schema: {
-            type: 'object',
-            properties: {
-              error: {
-                    type: 'string',
-                    properties: {
-                    },
-                    default:"Bad Request"
-                },
-                message: {
-                    type: 'string',
-                    default:"Data is invalid"
-                },
-                statusCode:{
-                  type:"number",
-                  default:400
-                }
-            },
-        }
-    },
-    body_add_student:{ 
-        description: 'Add student into class',
-        schema: {
-          type: 'object',
-          properties: {
-            student_id: { type: 'number' ,default:1},
-            class_id: { type: 'number' ,default:1},
-          },
-          required: ['student_id', 'class_id']
-        }
-    },
-    update_success :{
-        status: 201,
-        description: 'Update class success',
-        schema: {
-            type: 'object',
-            properties: {
-              success: {
-                    type: 'boolean',
-                    properties: {
-                    },
-                    default:true
-                },
-                message: {
-                    type: 'string',
-                    default:"Update class success"
-                }
-            },
-        }
-    },
-    update_not_found :{
+    update_not_found: {
         status: 404,
         description: 'Not Found',
         schema: {
@@ -242,72 +254,71 @@ export const Api={
             properties: {
                 error: {
                     type: 'object',
-                    default:"Not Found"
+                    default: "Not Found"
                 },
                 message: {
                     type: 'string',
-                    default:"Class with offer ID not found."
+                    default: "student with offer ID not found."
                 }
             },
             required: ['admin', 'message']
         }
     },
-    update_bad:{
+    update_bad: {
         status: 400,
         description: 'Error: Bad Request',
         schema: {
             type: 'object',
             properties: {
-              error: {
+                error: {
                     type: 'string',
                     properties: {
                     },
-                    default:"Bad Request"
+                    default: "Bad Request"
                 },
                 message: {
                     type: 'string',
-                    default:"Data is invalid"
+                    default: "Data is invalid"
                 },
-                statusCode:{
-                  type:"number",
-                  default:400
+                statusCode: {
+                    type: "number",
+                    default: 400
                 }
             },
         }
     },
-    body_update:{ 
-        description: 'Update class',
-        schema: {
-          type: 'object',
-          properties: {
-            name: { type: 'string',default:"Class name" },
-            teacher_id: { type: 'number',default: 1 },
-            course_id: { type: 'number',default: 1 },
-            max_students: { type: 'number',default:100},
-          },
-          required: []
-        }
-    },
-    delete_success :{
-        status: 201,
-        description: 'Delete class success',
+    body_update: {
+        description: 'Update module course',
         schema: {
             type: 'object',
             properties: {
-              success: {
+                name: { type: 'string' },
+                duration: { type: 'number', default: 100 },
+                course_id: { type: 'number', default: 1 },
+            },
+            required: []
+        }
+    },
+    delete_success: {
+        status: 201,
+        description: 'Delete module course success',
+        schema: {
+            type: 'object',
+            properties: {
+                success: {
                     type: 'boolean',
                     properties: {
                     },
-                    default:true
+                    default: true
                 },
                 message: {
                     type: 'string',
-                    default:"Delete class success"
+                    default: "Delete module course success"
                 }
             },
         }
     },
-    delete_not_found:{
+    delete_not_found: {
         status: 404,
         description: 'Not Found',
         schema: {
@@ -315,39 +326,37 @@ export const Api={
             properties: {
                 error: {
                     type: 'object',
-                    default:"Not Found"
+                    default: "Not Found"
                 },
                 message: {
                     type: 'string',
-                    default:"Class with offer ID not found."
+                    default: "Module course with offer ID not found."
                 }
             },
-            required: ['admin', 'message']
+            required: []
         }
     },
-    delete_bad :{
+    delete_bad: {
         status: 400,
         description: 'Error: Bad Request',
         schema: {
             type: 'object',
             properties: {
-              error: {
+                error: {
                     type: 'string',
                     properties: {
                     },
-                    default:"Bad Request"
+                    default: "Bad Request"
                 },
                 message: {
                     type: 'string',
-                    default:"Data is invalid"
+                    default: "Data is invalid"
                 },
-                statusCode:{
-                  type:"number",
-                  default:400
+                statusCode: {
+                    type: "number",
+                    default: 400
                 }
             },
         }
-    },
+    }
 }
-
-
