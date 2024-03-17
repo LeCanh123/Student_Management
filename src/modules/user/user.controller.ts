@@ -1,10 +1,14 @@
-import { Body, Controller, Get, Post, Res,HttpStatus, Version, Req, UseInterceptors, UploadedFile  } from '@nestjs/common';
+import { Body, Controller, Get, Post, Res,HttpStatus, Version, Req, UseInterceptors, UploadedFile, Put, Param  } from '@nestjs/common';
 import { UserService } from './user.service';
 import UserDto from './dtos/user.dto';
 import UserLoginDto from './dtos/user-login.dto';
 import { Response } from 'express';
-import { ApiTags,ApiBody, ApiResponse,ApiConsumes } from '@nestjs/swagger';
+import { ApiTags,ApiBody, ApiResponse,ApiConsumes ,ApiParam, ApiBearerAuth} from '@nestjs/swagger';
 import { Api,file_setup} from './swagger/user.swagger';
+import * as fs from 'fs';
+import * as path from 'path';
+import { common } from 'src/common/comon';
+
 
 @ApiTags('User')
 @Controller({ path: 'user', version: '' })
@@ -24,6 +28,8 @@ export class UserController {
   @ApiResponse(Api.create_bad)
   @ApiBody(Api.body_create)
   async create(@Body() user: UserDto, @Res() res: Response,@UploadedFile() file): Promise<any>  {
+    let avatar=await common.uploadFile(file);
+    user.avatar=file?avatar.name:null
     let result= await this.userService.create(user);
     return res.status(result.status||HttpStatus.BAD_REQUEST).json(result.data);
   }
@@ -35,6 +41,22 @@ export class UserController {
   async login(@Body() user: UserLoginDto, @Res() res: Response): Promise<any> {
     const { email, password } = user;
     let result=await this.userService.login(email, password);
+    return res.status(result.status||HttpStatus.BAD_REQUEST).json(result.data);
+  }
+
+  @Put('/:id')
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(file_setup)
+  @ApiBody(Api.body_update)
+  @ApiResponse(Api.update_success)
+  @ApiResponse(Api.update_bad)
+  @ApiResponse(Api.update_not_found)
+  @ApiParam({ name: 'id', description: 'ID of the user', type: 'string' })
+  @ApiBearerAuth()
+  async update(@Param('id') id: string, @Body() data: any, @Res() res: Response,@UploadedFile() file): Promise<any> {
+    let avatar=await common.uploadFile(file);
+    data.avatar=file?avatar:null
+    let result=await this.userService.update(data, Number(id));
     return res.status(result.status||HttpStatus.BAD_REQUEST).json(result.data);
   }
 }

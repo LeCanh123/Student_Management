@@ -1,6 +1,7 @@
 import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { BadRequestException } from '@nestjs/common';
 
 export const Api={
     body_create:{ 
@@ -16,8 +17,11 @@ export const Api={
             avatar: {
                 type: 'string',
                 format: 'binary',
-              }
-    
+            },
+            role:{
+                type: "string",
+                enum:["ADMIN","SUB_ADMIN","TEACHER"]
+            }
           },
           required: ['username', 'password', 'email', 'fullname','phone']
         }
@@ -114,10 +118,98 @@ export const Api={
             required: ['admin', 'message']
         }
     },
+    body_update:{ 
+        description: 'Update',
+        schema: {
+          type: 'object',
+          properties: {
+            username: { type: 'string' ,default:"userupdate"},
+            email: { type: 'string' ,default:"usernameupdate@gmail.com"},
+            fullname: { type: 'string',default:"Nguyen Van Update"},
+            password: { type: 'string' ,default:"123456"},
+            phone :  { type: 'string' ,default:"+84123456789"},
+            avatar: {
+                type: 'string',
+                format: 'binary',
+            },
+            role:{
+                type: "string",
+                enum:["ADMIN","SUB_ADMIN","TEACHER"]
+            }
+          },
+          required: []
+        }
+    },
+    update_success: {
+        status: 200,
+        description: 'Update user success',
+        schema: {
+            type: 'object',
+            properties: {
+                success: {
+                    type: 'boolean',
+                    properties: {
+                    },
+                    default: true
+                },
+                message: {
+                    type: 'string',
+                    default: "Update user success"
+                }
+            },
+        }
+    },
+    update_not_found: {
+        status: 404,
+        description: 'Not Found',
+        schema: {
+            type: 'object',
+            properties: {
+                error: {
+                    type: 'object',
+                    default: "Not Found"
+                },
+                message: {
+                    type: 'string',
+                    default: "User with offer ID not found."
+                }
+            },
+            required: []
+        }
+    },
+    update_bad: {
+        status: 400,
+        description: 'Error: Bad Request',
+        schema: {
+            type: 'object',
+            properties: {
+                error: {
+                    type: 'string',
+                    properties: {
+                    },
+                    default: "Bad Request"
+                },
+                message: {
+                    type: 'string',
+                    default: "Data is invalid"
+                },
+                statusCode: {
+                    type: "number",
+                    default: 400
+                }
+            },
+        }
+    },
 }
 
 
-
+const imageFileFilter = (req, file, cb) => {
+    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+      return cb(new BadRequestException('Only image files are allowed!'), false);
+    }
+    cb(null, true);
+  };
+  
 export const file_setup= FileInterceptor('avatar', {
     storage: diskStorage({
       destination: './uploads',
@@ -126,4 +218,5 @@ export const file_setup= FileInterceptor('avatar', {
         cb(null, filename);
       },
     }),
+    fileFilter: imageFileFilter,
 })

@@ -37,7 +37,7 @@ async function bootstrap() {
   app.enableCors(corsOptions); 
 
   //public
-  app.useStaticAssets(path.join(__dirname, '..', 'public'));
+  app.useStaticAssets(path.join(__dirname, '..', 'public'),);
 
   //version
   app.setGlobalPrefix('api');

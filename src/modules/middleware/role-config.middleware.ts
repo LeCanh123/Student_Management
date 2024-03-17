@@ -8,10 +8,15 @@ export class RoleMiddlewareConfig {
   static configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthMiddleware)
-      .forRoutes('/user/1');
+      .forRoutes(
+        // '/user/1'
+        );
     consumer
       .apply(userRoleMiddleware)
-      .forRoutes('/user/1');
+      .forRoutes(
+        
+        // '/user/1'
+        );
 
     consumer
       .apply(adminRoleMiddleware)

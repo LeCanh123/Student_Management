@@ -16,7 +16,8 @@ import { MulterModule } from '@nestjs/platform-express';
 import { Role } from './modules/role/database/role.entity';
 import { AdminModule } from './modules/admin/admin.module';
 import { ModuleCourseModule } from './modules/moduleCourse/module-course.module';
-
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [TypeOrmModule.forRoot(config),
@@ -35,7 +36,8 @@ import { ModuleCourseModule } from './modules/moduleCourse/module-course.module'
       // global: true,
       secret: process.env.JWT_SECRET_KEY || jwtConstants.secret,
       signOptions: { expiresIn: '60s' },
-    }),],
+    }),
+  ],
   controllers: [],
   providers: [],
 })
