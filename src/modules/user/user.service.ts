@@ -100,6 +100,31 @@ export class UserService {
     };
   }
 
+  async search(keyword: string) {
+    try {
+      const users = await this.userRepository
+        .createQueryBuilder('user')
+        .leftJoinAndSelect('user.role', 'role')
+        .where('user.fullname LIKE :keyword', { keyword: `%${keyword}%` })
+        .getMany();
+
+      return {
+        status: HttpStatus.OK,
+        data: users
+      };
+    }
+    catch (error) {
+      return {
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        data: {
+          error: "error",
+          message: "Internal Server Error"
+        }
+      };
+    }
+
+  }
+
   async update(data:any,id:number): Promise<any> {
     console.log("data",data);
     

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Res,HttpStatus, Version, Req, UseInterceptors, UploadedFile, Put, Param  } from '@nestjs/common';
+import { Body, Controller, Get, Post, Res,HttpStatus, Version, Req, UseInterceptors, UploadedFile, Put, Param, Query  } from '@nestjs/common';
 import { UserService } from './user.service';
 import UserDto from './dtos/user.dto';
 import UserLoginDto from './dtos/user-login.dto';
@@ -43,6 +43,18 @@ export class UserController {
     let result=await this.userService.login(email, password);
     return res.status(result.status||HttpStatus.BAD_REQUEST).json(result.data);
   }
+
+  @Get('search')
+  @ApiResponse(Api.search_success)
+  @ApiResponse(Api.search_server_error)
+  @ApiBearerAuth()
+  async search(@Query('keyword') keyword: string, @Res() res: Response,) {
+    console.log("keyword", keyword);
+    const result = await this.userService.search(keyword);
+    return res.status(result.status || HttpStatus.INTERNAL_SERVER_ERROR).json(result.data);
+  }
+
+  
 
   @Put('/:id')
   @ApiConsumes('multipart/form-data')

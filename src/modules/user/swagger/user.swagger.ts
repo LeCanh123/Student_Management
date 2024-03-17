@@ -200,6 +200,43 @@ export const Api={
             },
         }
     },
+    search_success:{
+        status: 200,
+        description: 'Search teacher success',
+        schema: {
+            type: 'array',
+            items: {
+                type: 'object',
+                properties: {
+                    id: { type: 'number' },
+                    name: { type: 'string' },
+                    dob: { type: 'string', format: 'date-time' },
+                    email: { type: 'string',default:"teacher@gmail.com" },
+                    phone: { type: 'string' ,default:"123456789"},
+                    role:{}
+                },
+            }
+        }
+    },
+    search_server_error:{
+        status: 500,
+        description: 'Internal Server Error',
+        schema: {
+            type: 'object',
+            properties: {
+                error: {
+                    type: 'string',
+                    properties: {
+                    },
+                    default: "error"
+                },
+                message: {
+                    type: 'string',
+                    default: "Internal Server Error"
+                }
+            },
+        }
+    },
 }
 
 

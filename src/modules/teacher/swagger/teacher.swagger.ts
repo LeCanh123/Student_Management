@@ -52,7 +52,7 @@ export const Api={
                     email: { type: 'string',default:"teacher@gmail.com" },
                     phone: { type: 'string' ,default:"123456789"},
                     address: { type: 'string',default:"79 Dien bien phu, P.Dakao, Q1"  },
-                    is_delete: { type: 'boolean' },
+                    status: { type: 'boolean' },
                     class:{}
                 },
             }
