@@ -105,15 +105,7 @@ export class UserService {
 
   async search(keyword: string,skip:number,take:number) {
     try {
-      // const users = await this.userRepository
-      //   .createQueryBuilder('user')
-      //   .leftJoinAndSelect('user.role', 'role')
-      //   .where('user.fullname ILike  :keyword', { keyword: `%${keyword}%` })
-      //   .skip(skip)
-      //   .take(take)
-      //   .getMany();
-
-        const users = await this.userRepository.find({
+      const users = await this.userRepository.find({
           where: {
               fullname: ILike(`%${keyword}%`)
           },
@@ -121,13 +113,9 @@ export class UserService {
           skip: skip,
           take: take
       });
-      console.log("skip",skip);
-      console.log("take",take);
-      
-
-        const total = await this.userRepository.createQueryBuilder('user')
-        .where('user.fullname LIKE  :keyword', { keyword: `%${keyword}%` })
-        .getCount();
+      const total = await this.userRepository.count({
+      where: {fullname: ILike(`%${keyword}%`)}
+      })
 
       return {
         status: HttpStatus.OK,
@@ -149,8 +137,6 @@ export class UserService {
   }
 
   async update(data:any,id:number): Promise<any> {
-    console.log("data",data);
-    
     try{
       data.avatar=data.avatar?data.avatar?.name:null;
       const salt = await bcrypt.genSalt();
@@ -187,7 +173,10 @@ export class UserService {
         };
       }
       let checkPhone=await this.userRepository.find({where:{id: Not(id),phone:data.phone}})
+      
       if(checkPhone.length>0){
+        console.log("checkPhone",checkPhone);
+
         return {
           status: HttpStatus.BAD_REQUEST,
           data: {
