@@ -1,7 +1,7 @@
 import { Injectable, HttpStatus } from '@nestjs/common';
 import { InjectRepository, } from '@nestjs/typeorm';
 import { User } from './database/user.entity';
-import { Not, Repository, getManager  } from 'typeorm';
+import { ILike, Like, Not, Repository, getManager  } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import UserDto from './dtos/user.dto';
@@ -17,9 +17,12 @@ export class UserService {
     private readonly roleRepository: Repository<Role>,
     private jwtService: JwtService,
   ) { }
-  async getAll() {
-    const data = await this.userRepository.find({ relations: ['role'] });
-    return data;
+  async getAll(skip:number,take:number) {
+    const data = await this.userRepository.find({ relations: ['role'],  skip: skip,
+    take: take });
+    const total = await this.userRepository.createQueryBuilder('user')
+    .getCount();
+    return {data,total};
   }
 
   async create(user: UserDto) {
@@ -100,20 +103,40 @@ export class UserService {
     };
   }
 
-  async search(keyword: string) {
+  async search(keyword: string,skip:number,take:number) {
     try {
-      const users = await this.userRepository
-        .createQueryBuilder('user')
-        .leftJoinAndSelect('user.role', 'role')
-        .where('user.fullname LIKE :keyword', { keyword: `%${keyword}%` })
-        .getMany();
+      // const users = await this.userRepository
+      //   .createQueryBuilder('user')
+      //   .leftJoinAndSelect('user.role', 'role')
+      //   .where('user.fullname ILike  :keyword', { keyword: `%${keyword}%` })
+      //   .skip(skip)
+      //   .take(take)
+      //   .getMany();
+
+        const users = await this.userRepository.find({
+          where: {
+              fullname: ILike(`%${keyword}%`)
+          },
+          relations: ['role'],
+          skip: skip,
+          take: take
+      });
+      console.log("skip",skip);
+      console.log("take",take);
+      
+
+        const total = await this.userRepository.createQueryBuilder('user')
+        .where('user.fullname LIKE  :keyword', { keyword: `%${keyword}%` })
+        .getCount();
 
       return {
         status: HttpStatus.OK,
-        data: users
+        data: {users,total}
       };
     }
     catch (error) {
+      console.log("error",error);
+      
       return {
         status: HttpStatus.INTERNAL_SERVER_ERROR,
         data: {

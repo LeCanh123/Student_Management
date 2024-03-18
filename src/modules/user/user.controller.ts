@@ -16,8 +16,9 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
   @Version('')
   @Get()
-  getAll() {
-    return this.userService.getAll();
+  getAll(@Query('skip') skip: string,@Query('take') take: string,) {
+    console.log("skip",skip);
+    return this.userService.getAll(Number(skip),Number(take));
   }
 
   @Post()
@@ -48,9 +49,14 @@ export class UserController {
   @ApiResponse(Api.search_success)
   @ApiResponse(Api.search_server_error)
   @ApiBearerAuth()
-  async search(@Query('keyword') keyword: string, @Res() res: Response,) {
+  async search(@Query('keyword') keyword: string,
+  @Query('skip') skip: string,
+  @Query('take') take: string, 
+  @Res() res: Response,) {
     console.log("keyword", keyword);
-    const result = await this.userService.search(keyword);
+    console.log("skip", skip);
+    console.log("take", take);
+    const result = await this.userService.search(keyword,Number(skip),Number(take));
     return res.status(result.status || HttpStatus.INTERNAL_SERVER_ERROR).json(result.data);
   }
 
