@@ -21,6 +21,7 @@ export class UserService {
     const data = await this.userRepository.find({ relations: ['role'],  skip: skip,
     take: take });
     const total = await this.userRepository.createQueryBuilder('user')
+    .where("user.status = :status", { status: true })
     .getCount();
     return {data,total};
   }
@@ -150,7 +151,9 @@ export class UserService {
           take: take
       });
       const total = await this.userRepository.count({
-      where: {fullname: ILike(`%${keyword}%`)}
+      where: {fullname: ILike(`%${keyword}%`),
+        status:true
+      }
       })
 
       return {

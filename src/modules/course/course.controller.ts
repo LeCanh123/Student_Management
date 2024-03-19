@@ -14,8 +14,8 @@ export class CourseController {
   @ApiResponse(Api.get_success)
   @ApiResponse(Api.get_error)
   @ApiBearerAuth()
-  async getAll(@Res() res: Response) {
-    let result = await this.courseService.getAll();
+  async getAll(@Res() res: Response,@Query('skip') skip: string,@Query('take') take: string,) {
+    let result = await this.courseService.getAll(Number(skip),Number(take));
     return res.status(result.status || HttpStatus.INTERNAL_SERVER_ERROR).json(result.data);
   }
 
@@ -23,9 +23,12 @@ export class CourseController {
   @ApiResponse(Api.search_success)
   @ApiResponse(Api.search_error)
   @ApiBearerAuth()
-  async search(@Query('keyword') keyword: string, @Res() res: Response,) {
+  async search(@Query('keyword') keyword: string, @Res() res: Response,
+  @Query('skip') skip: string,
+  @Query('take') take: string, 
+  ) {
     console.log("keyword", keyword);
-    const result = await this.courseService.search(keyword);
+    const result = await this.courseService.search(keyword,Number(skip),Number(take));
     return res.status(result.status || HttpStatus.INTERNAL_SERVER_ERROR).json(result.data);
   }
 
@@ -44,7 +47,7 @@ export class CourseController {
   @ApiResponse(Api.create_error)
   @ApiBody(Api.body_create)
   @ApiBearerAuth()
-  async create(@Body() course: CourseDto, @Res() res: Response): Promise<any> {
+  async create(@Body() course: CourseDto, @Res() res: Response,): Promise<any> {
     let result = await this.courseService.create(course);
     return res.status(result.status || HttpStatus.BAD_REQUEST).json(result.data);
   }
