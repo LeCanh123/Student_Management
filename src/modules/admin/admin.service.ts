@@ -6,7 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import UserDto from '../user/dtos/user.dto';
 import { RoleEnum } from 'src/constants/enums/enum';
-import { CreateRole, Role } from '../role/database/role.entity';
+import { CreateRole, Role ,RoleName} from '../role/database/role.entity';
 @Injectable()
 export class AdminService {
   constructor(
@@ -17,6 +17,8 @@ export class AdminService {
     private jwtService: JwtService,
   ) { }
   async create(admin: UserDto) {
+    console.log("admin",admin);
+    
     try {
       const salt = await bcrypt.genSalt();
       const hashPassword = await bcrypt.hash(admin.password, salt);
@@ -25,22 +27,58 @@ export class AdminService {
       if (findRole.length == 0) {
         await this.roleRepository.save(CreateRole)
       }
-      const role = await this.roleRepository.find({ where: { role_name: CreateRole[0].role_name } });
+      //check mail
+      let checkEmail=await this.adminRepository.find({where:{email:admin.email}})
+      if(checkEmail.length>0){
+        return {
+          status: HttpStatus.BAD_REQUEST,
+          data: {
+            error: "Bad Request",
+            message: "Email already exists"
+          }
+        };
+      }
+      //check username
+      let checkUserName=await this.adminRepository.find({where:{username:admin.username}})
+      if(checkUserName.length>0){
+        return {
+          status: HttpStatus.BAD_REQUEST,
+          data: {
+            error: "Bad Request",
+            message: "UserName already exists"
+          }
+        };
+      }
+      //check phone
+      let checkPhone=await this.adminRepository.find({where:{phone:admin.phone}})
+      if(checkPhone.length>0){
+        console.log("checkPhone",checkPhone);
+        return {
+          status: HttpStatus.BAD_REQUEST,
+          data: {
+            error: "Bad Request",
+            message: "Phone number already exists"
+          }
+        }; 
+      }
+      const role = await this.roleRepository.find({ where: { role_name: RoleName[admin.role] } });
 
       const newAdmin = await this.adminRepository.save({ ...admin, role: [role[0]] });
       return {
         status: HttpStatus.OK,
         data: {
           admin: newAdmin,
-          message: "Create new admin success"
-        }
+          message: "Create new user success"
+        } 
       };
     }
     catch (error) {
+      console.log("error",error);
+      
       return {
         status: HttpStatus.BAD_REQUEST,
         data: {
-          message: "Create new admin failed"
+          message: "Create new user failed"
         }
       };
     }

@@ -36,6 +36,42 @@ export class UserService {
       }
       let findUserRole=await this.roleRepository.find({ where: { role_name: RoleName[user.role] } });
       const role = await this.roleRepository.find({ where: { role_name: CreateRole[2].role_name } });
+
+      //check mail
+      let checkEmail=await this.userRepository.find({where:{email:user.email}})
+      if(checkEmail.length>0){
+        return {
+          status: HttpStatus.BAD_REQUEST,
+          data: {
+            error: "Bad Request",
+            message: "Email already exists"
+          }
+        };
+      }
+      //check username
+      let checkUserName=await this.userRepository.find({where:{username:user.username}})
+      if(checkUserName.length>0){
+        return {
+          status: HttpStatus.BAD_REQUEST,
+          data: {
+            error: "Bad Request",
+            message: "UserName already exists"
+          }
+        };
+      }
+      //check phone
+      let checkPhone=await this.userRepository.find({where:{phone:user.phone}})
+      if(checkPhone.length>0){
+        console.log("checkPhone",checkPhone);
+        return {
+          status: HttpStatus.BAD_REQUEST,
+          data: {
+            error: "Bad Request",
+            message: "Phone number already exists"
+          }
+        };
+      }
+
       const newUser = await this.userRepository.save({
         ...user,
         role: findUserRole?findUserRole:[role[0]]
@@ -137,11 +173,11 @@ export class UserService {
   }
 
   async update(data:any,id:number): Promise<any> {
+    
     try{
       data.avatar=data.avatar?data.avatar?.name:null;
       const salt = await bcrypt.genSalt();
       const hashPassword = await bcrypt.hash(data.password, salt);
-      data.password = hashPassword;
       let findUserUpdate=await this.userRepository.findOne({where:{id}})
       if(!findUserUpdate){
         return {
@@ -151,6 +187,10 @@ export class UserService {
             message: "User with offer ID not found."
           }
         };
+      }else{
+        if((data.password!=findUserUpdate.password)&&(data.password?.length>=6)){
+          data.password = hashPassword;
+        }
       }
       let checkEmail=await this.userRepository.find({where:{id: Not(id),email:data.email}})
       if(checkEmail.length>0){
@@ -173,10 +213,8 @@ export class UserService {
         };
       }
       let checkPhone=await this.userRepository.find({where:{id: Not(id),phone:data.phone}})
-      
       if(checkPhone.length>0){
         console.log("checkPhone",checkPhone);
-
         return {
           status: HttpStatus.BAD_REQUEST,
           data: {
@@ -197,11 +235,21 @@ export class UserService {
       if(userUpdate){
         const { role } = data;
         const existingRole = await this.roleRepository.findOne({ where: { role_name: role } });
+        
         const originalRole = await this.userRepository.find({where:{id}, relations: ['role'] });
+        const usersWithAdminRole = await this.userRepository.find({
+          relations: ['role'],
+          where: {
+              status:true,
+              role: {
+                  role_name: RoleName['ADMIN']
+              }
+          }
+      });
         if (!existingRole) {
         }else{
           if(originalRole?.[0]?.role?.[0]?.role_name==RoleName.ADMIN){
-            if(originalRole.length<2){
+            if(usersWithAdminRole.length<2){
               return {
                 status: HttpStatus.OK,
                 data: {

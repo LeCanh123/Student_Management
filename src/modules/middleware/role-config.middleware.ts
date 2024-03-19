@@ -1,31 +1,35 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
-import { userRoleMiddleware } from './user-role.middleware'; 
+import { teacherRoleMiddleware } from './teacher-role.middleware'; 
 import { adminRoleMiddleware } from './admin-role.middleware';
-import { AuthMiddleware } from './auth.middleware';
+import { SubAdminMiddleware } from './sub-admin-role.middleware';
 
 @Module({})
 export class RoleMiddlewareConfig {
   static configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(AuthMiddleware)
+      .apply(SubAdminMiddleware)
       .forRoutes(
         // '/user/1'
         );
     consumer
-      .apply(userRoleMiddleware)
+      .apply(teacherRoleMiddleware)
       .forRoutes(
-        
-        // '/user/1'
+        { path: '/class*', method: RequestMethod.ALL},
         );
 
     consumer
       .apply(adminRoleMiddleware)
       .forRoutes( 
+                  //user
+                  { path: '/user', method: RequestMethod.ALL},
+                  //
+
+                  // { path: '/course*', method: RequestMethod.ALL},
                   // { path: '/course*', method: RequestMethod.PUT},
                   // { path: '/course*', method: RequestMethod.POST},
-                  // { path: '/teacher*', method: RequestMethod.ALL},
-                  // { path: '/student*', method: RequestMethod.ALL},
-                  // { path: '/admin/1', method: RequestMethod.ALL }
+                  { path: '/teacher*', method: RequestMethod.ALL},
+                  { path: '/student*', method: RequestMethod.ALL},
+                  // { path: '/admin', method: RequestMethod.ALL }
                   
                   );
   }

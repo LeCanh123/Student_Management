@@ -1,6 +1,8 @@
 import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { BadRequestException } from '@nestjs/common';
+
 
 export const Api={}
 export const body_create = { 
@@ -16,10 +18,14 @@ export const body_create = {
           avatar: {
               type: 'string',
               format: 'binary',
-            }
+          },
+          role:{
+            type: "string",
+            enum:["ADMIN","SUB_ADMIN","TEACHER"]
+          }
   
         },
-        required: ['username', 'password', 'email', 'fullname','phone']
+        required: ['username', 'password', 'email', 'fullname','phone','role']
       }
 }
 
@@ -68,6 +74,13 @@ export const create_bad ={
     }
 }
 
+const imageFileFilter = (req, file, cb) => {
+    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+      return cb(new BadRequestException('Only image files are allowed!'), false);
+    }
+    cb(null, true);
+  };
+  
 export const file_setup= FileInterceptor('avatar', {
     storage: diskStorage({
       destination: './uploads',
@@ -76,4 +89,5 @@ export const file_setup= FileInterceptor('avatar', {
         cb(null, filename);
       },
     }),
+    fileFilter: imageFileFilter,
 })
