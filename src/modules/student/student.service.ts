@@ -1,6 +1,6 @@
 import { Injectable, HttpStatus } from '@nestjs/common';
 import { InjectRepository, } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import StudentDto from './dtos/student.dto';
 import UpdateStudentDto from './dtos/update-student.dto';
 import { Student } from './database/student.entity';
@@ -17,12 +17,22 @@ export class StudentService {
     private readonly studentRepository: Repository<Student>,
   ) { }
 
-  async getAll() {
+  async getAll(skip:number,take:number) {
     try {
-      const data = await this.studentRepository.find({ where: { status: true },relations: ['class','class.course'] });
+      const data = await this.studentRepository.find({ where: { status: true },relations: ['class','class.course'] ,
+      skip: skip?skip:0,
+      take: take?take:1000     
+      });
+
+      const total = await this.studentRepository.createQueryBuilder('student')
+      .where("student.status = :status", { status: true })
+      .getCount();
       return {
         status: HttpStatus.OK,
-        data
+        data:{
+          data,
+          total
+        }
       };
     }
     catch (error) {
@@ -92,7 +102,14 @@ export class StudentService {
           }
         };
       }
-      const newstudent = await this.studentRepository.save(student_data);
+      const newstudent = await this.studentRepository.save({
+        name:student_data.name,
+        dob:student_data.dob,
+        email:student_data.email,
+        phone:student_data.phone,
+        address:student_data.address,
+        class:{id:student_data.class_id=="none"||undefined?null:student_data.class_id}
+      });
       return {
         status: HttpStatus.CREATED,
         data: {
@@ -113,6 +130,8 @@ export class StudentService {
   }
 
   async update(student_data: UpdateStudentDto, id: number) {
+    console.log("id",id);
+    
     try {
       const findStudent = await this.studentRepository.findOne({ where: { id: id } });
       if (!findStudent) {
@@ -150,9 +169,22 @@ export class StudentService {
           }
         };
       }
-      const updateStudent = await this.studentRepository.update(Number(id), {...student_data,phone:student_data.phone});
+      let newDataUpdate:any={}
+      if(student_data.class_id=="none"||undefined){
+
+      }else{
+        newDataUpdate.class={id:student_data.class_id}
+      }
+      const updateStudent = await this.studentRepository.update(Number(id), {
+        name:student_data.name,
+        dob:student_data.dob,
+        email:student_data.email,
+        phone:student_data.phone,
+        address:student_data.address,
+        ...newDataUpdate
+      });
       return {
-        status: HttpStatus.CREATED,
+        status: HttpStatus.OK,
         data: {
           success: true,
           message: "Update student success"
@@ -160,6 +192,8 @@ export class StudentService {
       };
     }
     catch (error) {
+      // console.log("err",error);
+      
       return {
         status: HttpStatus.BAD_REQUEST,
         data: {
@@ -170,18 +204,26 @@ export class StudentService {
     }
   }
 
-  async search(keyword: string) {
+  async search(keyword: string,skip:number,take:number) {
     try {
-      const students = await this.studentRepository
-        .createQueryBuilder('student')
-        .leftJoinAndSelect('student.class', 'class')
-        .leftJoinAndSelect('class.course', 'course')
-        .where('student.name LIKE :keyword', { keyword: `%${keyword}%` })
-        .getMany();
 
+      const students = await this.studentRepository.find({
+        where: {
+          name: ILike(`%${keyword}%`),
+          status:true
+        },
+        relations: ['class','class.course'],
+        skip: skip,
+        take: take
+      });
+      const total = await this.studentRepository.count({
+        where: {name: ILike(`%${keyword}%`),
+          status:true
+        },
+      })
       return {
         status: HttpStatus.OK,
-        data: students
+        data: {data:students,total}
       };
     }
     catch (error) {

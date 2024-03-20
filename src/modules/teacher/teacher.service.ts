@@ -16,8 +16,8 @@ export class TeacherService {
   async getAll(skip:number,take:number) {
     try {
       const data = await this.teacherRepository.find({ where: { status: true }, relations: ['class'],
-      skip: skip,
-      take: take 
+      skip: skip?skip:0,
+      take: take?take:1000 
       });
       const total = await this.teacherRepository.createQueryBuilder('teacher')
       .where("teacher.status = :status", { status: true })

@@ -1,4 +1,4 @@
-import { IsDate, IsEmail, IsNotEmpty, IsNumber, IsString, MinLength } from "class-validator";
+import { IsDate, IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString, MinLength } from "class-validator";
 import { Type } from 'class-transformer';
 
 export default class StudentDto {
@@ -21,4 +21,8 @@ export default class StudentDto {
     @IsNotEmpty()
     @IsString()
     address: string;
+
+    @IsOptional()
+    class_id: any;
+    
 }

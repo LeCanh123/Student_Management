@@ -1,6 +1,6 @@
 import { Injectable, HttpStatus } from '@nestjs/common';
 import { InjectRepository, } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { Class } from './database/class.entity';
 import ClassDto from './dtos/class.dto';
 import UpdateClassDto from './dtos/update-class.dto';
@@ -16,16 +16,24 @@ export class ClassService {
     private readonly studentRepository: Repository<Student>,
   ) { }
 
-  async getAll() {
+  async getAll(skip:number,take:number) {
     try {
       const data = await this.classRepository.find({ where: { status: true } ,
-        relations: ['course','teacher','student'] 
+        relations: ['course','teacher','student'],
+        skip:skip?skip:0,take:take?take:1000 
       });
+      const total = await this.classRepository.createQueryBuilder('class')
+      .where("class.status = :status", { status: true })
+      .getCount();
+
       console.log("data",data);
       
       return {
         status: HttpStatus.OK,
-        data
+        data:{
+          data,
+          total
+        }
       };
     }
     catch (error) {
@@ -166,22 +174,32 @@ export class ClassService {
     }
   }
 
-  async search(keyword: string) {
+  async search(keyword: string,skip:number,take:number) {
     try {
-      const classes = await this.classRepository
-        .createQueryBuilder('class')
-        .leftJoinAndSelect('class.course', 'course')
-        .leftJoinAndSelect('class.teacher', 'teacher')
-        .leftJoinAndSelect('class.student', 'student')
-        .where('class.name LIKE :keyword', { keyword: `%${keyword}%` })
-        .getMany();
+      const classes = await this.classRepository.find({
+        where: {
+          name: ILike(`%${keyword}%`),
+          status:true
+        },
+        relations: ['course','teacher','student'],
+        skip: skip,
+        take: take
+      });
+
+      const total = await this.classRepository.count({
+        where: {name: ILike(`%${keyword}%`),
+          status:true
+        },
+      })
 
       return {
         status: HttpStatus.OK,
-        data: classes
+        data: {data:classes,total}
       };
     }
     catch (error) {
+      console.log("error",error);
+      
       return {
         status: HttpStatus.INTERNAL_SERVER_ERROR,
         data: {

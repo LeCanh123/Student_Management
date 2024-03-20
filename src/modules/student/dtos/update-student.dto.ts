@@ -9,7 +9,7 @@ export default class UpdateStudentDto {
     @IsDate()
     @IsOptional()
     @Type(() => Date)
-    dod: Date;
+    dob: Date;
 
     @IsEmail()
     @IsOptional()
@@ -23,4 +23,7 @@ export default class UpdateStudentDto {
     @IsString()
     @IsOptional()
     address: string;
+
+    @IsOptional()
+    class_id: any;
 }

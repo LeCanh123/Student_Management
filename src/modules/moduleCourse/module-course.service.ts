@@ -1,6 +1,6 @@
 import { Injectable, HttpStatus } from '@nestjs/common';
 import { InjectRepository, } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import ModuleCourseDto from './dtos/module-course.dto';
 import UpdateModuleCourseDto from './dtos/update-module-course.dto';
 import { ModuleCourse } from './database/module-course.entity';
@@ -17,15 +17,22 @@ export class ModuleCourseService {
     private readonly moduleCourseRepository: Repository<ModuleCourse>,
   ) { }
 
-  async getAll() {
+  async getAll(skip:number,take:number) {
     try {
       const data = await this.moduleCourseRepository.find({
         where: { status: true },
-        relations: ['course']
+        relations: ['course'],
+        skip: skip,
+        take: take 
       });
+      const total = await this.moduleCourseRepository.createQueryBuilder('modulecourse')
+      .where("modulecourse.status = :status", { status: true })
+      .getCount();
       return {
         status: HttpStatus.OK,
-        data
+        data:{
+          data,total
+        }
       };
     }
     catch (error) {
@@ -120,17 +127,26 @@ export class ModuleCourseService {
     }
   }
 
-  async search(keyword: string) {
+  async search(keyword: string,skip:number,take:number) {
     try {
-      const moduleCourse = await this.moduleCourseRepository
-        .createQueryBuilder('moduleCourse')
-        .leftJoinAndSelect('moduleCourse.course', 'course')
-        .where('moduleCourse.name LIKE :keyword', { keyword: `%${keyword}%` })
-        .getMany();
+      const moduleCourse = await this.moduleCourseRepository.find({
+        where: {
+          name: ILike(`%${keyword}%`),
+          status:true
+        },
+        relations: ['course'],
+        skip: skip,
+        take: take
+      });
+      const total = await this.moduleCourseRepository.count({
+        where: {name: ILike(`%${keyword}%`),
+          status:true
+        },
+      })
 
       return {
         status: HttpStatus.OK,
-        data: moduleCourse
+        data: {data:moduleCourse,total}
       };
     }
     catch (error) {
