@@ -9,7 +9,7 @@ export default class UpdateTeacherDto {
     @IsDate()
     @IsOptional()
     @Type(() => Date)
-    dod: Date;
+    dob: Date;
 
     @IsEmail()
     @IsOptional()

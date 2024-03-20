@@ -1,6 +1,6 @@
 import { Injectable, HttpStatus } from '@nestjs/common';
 import { InjectRepository, } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import TeacherDto from './dtos/teacher.dto';
 import UpdateTeacherDto from './dtos/update-teacher.dto';
 import { Teacher } from './database/teacher.entity';
@@ -13,12 +13,21 @@ export class TeacherService {
     private readonly teacherRepository: Repository<Teacher>,
   ) { }
 
-  async getAll() {
+  async getAll(skip:number,take:number) {
     try {
-      const data = await this.teacherRepository.find({ where: { status: true }, relations: ['class']  });
+      const data = await this.teacherRepository.find({ where: { status: true }, relations: ['class'],
+      skip: skip,
+      take: take 
+      });
+      const total = await this.teacherRepository.createQueryBuilder('teacher')
+      .where("teacher.status = :status", { status: true })
+      .getCount();
       return {
         status: HttpStatus.OK,
-        data
+        data:{
+          data,
+          total
+        }
       };
     }
     catch (error) {
@@ -114,6 +123,8 @@ export class TeacherService {
   }
 
   async update(teacher_data: UpdateTeacherDto, id: number) {
+    console.log("teacher_data",teacher_data);
+    
     try {
       const findTeacher = await this.teacherRepository.findOne({ where: { id: id } });
       if (!findTeacher) {
@@ -151,9 +162,15 @@ export class TeacherService {
           }
         };
       }
-      const updateTeacher = await this.teacherRepository.update(Number(id), {...teacher_data,phone:Number(teacher_data.phone)});
+      const updateTeacher = await this.teacherRepository.update(Number(id), {
+        name:teacher_data.name,
+        dob:teacher_data.dob,
+        email:teacher_data.email,
+        phone:Number(teacher_data.phone),
+        address:teacher_data.address,
+      });
       return {
-        status: HttpStatus.CREATED,
+        status: HttpStatus.OK,
         data: {
           success: true,
           message: "Update teacher success"
@@ -161,6 +178,8 @@ export class TeacherService {
       };
     }
     catch (error) {
+      console.log("error",error);
+      
       return {
         status: HttpStatus.BAD_REQUEST,
         data: {
@@ -171,17 +190,25 @@ export class TeacherService {
     }
   }
 
-  async search(keyword: string) {
+  async search(keyword: string,skip:number,take:number) {
     try {
-      const teachers = await this.teacherRepository
-        .createQueryBuilder('teacher')
-        .leftJoinAndSelect('teacher.class', 'class')
-        .where('teacher.name LIKE :keyword', { keyword: `%${keyword}%` })
-        .getMany();
-
+        const teachers = await this.teacherRepository.find({
+          where: {
+            name: ILike(`%${keyword}%`),
+            status:true
+          },
+          relations: ['class'],
+          skip: skip,
+          take: take
+        });
+        const total = await this.teacherRepository.count({
+          where: {name: ILike(`%${keyword}%`),
+            status:true
+          },
+        })
       return {
         status: HttpStatus.OK,
-        data: teachers
+        data: {data:teachers,total}
       };
     }
     catch (error) {

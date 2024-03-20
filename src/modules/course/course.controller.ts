@@ -27,7 +27,6 @@ export class CourseController {
   @Query('skip') skip: string,
   @Query('take') take: string, 
   ) {
-    console.log("keyword", keyword);
     const result = await this.courseService.search(keyword,Number(skip),Number(take));
     return res.status(result.status || HttpStatus.INTERNAL_SERVER_ERROR).json(result.data);
   }

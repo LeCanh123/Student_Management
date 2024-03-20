@@ -19,8 +19,8 @@ export class CourseService {
       take: take 
       });
       const total = await this.courseRepository.createQueryBuilder('course')
-    .where("course.status = :status", { status: true })
-    .getCount();
+      .where("course.status = :status", { status: true })
+      .getCount();
       return {
         status: HttpStatus.OK,
         data:{
@@ -162,7 +162,8 @@ export class CourseService {
     try {
       const courses = await this.courseRepository.find({
         where: {
-          name: ILike(`%${keyword}%`)
+          name: ILike(`%${keyword}%`),
+          status:true
         },
         relations: ['class','modulecourse'],
         skip: skip,
