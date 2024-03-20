@@ -47,7 +47,7 @@ export class CourseController {
   @ApiResponse(Api.create_error)
   @ApiBody(Api.body_create)
   @ApiBearerAuth()
-  async create(@Body() course: CourseDto, @Res() res: Response,): Promise<any> {
+  async create(@Body() course, @Res() res: Response,): Promise<any> {
     let result = await this.courseService.create(course);
     return res.status(result.status || HttpStatus.BAD_REQUEST).json(result.data);
   }

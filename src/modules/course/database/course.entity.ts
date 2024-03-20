@@ -10,7 +10,7 @@ export class Course {
     @Column({ length: 100, })
     name: string
 
-    @Column()
+    @Column({nullable:true})
     description: string
 
     //Thời gian đào tạo

@@ -43,7 +43,7 @@ export class CourseService {
 
   async getOne(id: number) {
     try {
-      const data = await this.courseRepository.find({ where: { id: id }, relations: ['class', 'modulecourse'] });
+      const data = await this.courseRepository.find({ where: { id: id,status:true }, relations: ['class', 'modulecourse'] });
       if (!data || data?.length == 0) {
         return {
           status: HttpStatus.NOT_FOUND,
@@ -71,8 +71,22 @@ export class CourseService {
   }
 
   async create(course: CourseDto) {
+    console.log("course",course);
+    
     try {
-      const newCourse = await this.courseRepository.save(course);
+      let checkName = await this.courseRepository.find({where:{name:course.name,status:true}})
+      if(checkName?.length>0){
+        return {
+          status: HttpStatus.BAD_REQUEST,
+          data: {
+            error: "Bad Request",
+            message: "Name already exists"
+          }
+        };
+      }
+      const newCourse = await this.courseRepository.save({...course,duration:Number(course.duration),
+        description:course.description||null
+      });
       return {
         status: HttpStatus.CREATED,
         data: {
@@ -82,6 +96,8 @@ export class CourseService {
       };
     }
     catch (error) {
+      console.log("error",error);
+      
       return {
         status: HttpStatus.BAD_REQUEST,
         data: {
@@ -144,13 +160,6 @@ export class CourseService {
 
   async search(keyword: string,skip:number,take:number) {
     try {
-      // const courses = await this.courseRepository
-      //   .createQueryBuilder('course')
-      //   .leftJoinAndSelect('course.class', 'class')
-      //   .leftJoinAndSelect('course.modulecourse', 'modulecourse')
-      //   .where('course.name LIKE :keyword', { keyword: `%${keyword}%` })
-      //   .getMany();
-
       const courses = await this.courseRepository.find({
         where: {
           name: ILike(`%${keyword}%`)
