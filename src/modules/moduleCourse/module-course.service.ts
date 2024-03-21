@@ -78,7 +78,14 @@ export class ModuleCourseService {
 
   async create(module_course_data: ModuleCourseDto) {
     try {
-      const newModuleCourse = await this.moduleCourseRepository.save(module_course_data);
+      const newModuleCourse = await this.moduleCourseRepository.save({
+        name:module_course_data.name,
+        duration:module_course_data.duration,
+        course: {
+          id: (module_course_data.course_id&&String(module_course_data.course_id)!='none')?
+          module_course_data.course_id:null
+        }
+      });
       return {
         status: HttpStatus.CREATED,
         data: {
@@ -100,16 +107,16 @@ export class ModuleCourseService {
 
   async update(module_course_data: UpdateModuleCourseDto, id: number) {
     try {
-
       const updateModuleCourse = await this.moduleCourseRepository.update(Number(id), {
         name: module_course_data.name,
         duration: module_course_data.duration,
         course: {
-          id: module_course_data.course_id
+          id: (module_course_data.course_id&&String(module_course_data.course_id)!='none')?
+          module_course_data.course_id:null
         }
       });
       return {
-        status: HttpStatus.CREATED,
+        status: HttpStatus.OK,
         data: {
           success: true,
           message: "Update student success"

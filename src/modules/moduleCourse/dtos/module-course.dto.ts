@@ -7,10 +7,7 @@ export default class ModuleCourseDto {
     name: string;
 
     @IsNotEmpty()
-    @IsNumber()
-    duration:number
+    duration:any
 
-    @IsNotEmpty()
-    @IsNumber()
-    course_id:number
+    course_id:any
 }

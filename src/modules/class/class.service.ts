@@ -93,8 +93,8 @@ export class ClassService {
       }
       const newClass = await this.classRepository.save({
         ...class_data,
-        course: { id: class_data.course_id },
-        teacher: { id: class_data.teacher_id }
+        course: { id: class_data.course_id?Number(class_data.course_id):null },
+        teacher: { id: class_data.teacher_id?Number(class_data.teacher_id):null }
       });
       return {
         status: HttpStatus.CREATED,
@@ -105,6 +105,8 @@ export class ClassService {
       };
     }
     catch (error) {
+      console.log("error",error);
+      
       return {
         status: HttpStatus.BAD_REQUEST,
         data: {
@@ -138,6 +140,8 @@ export class ClassService {
   }
 
   async update(class_data: UpdateClassDto, id: number) {
+    console.log("class_data",class_data);
+    
     try {
       const findClass = await this.classRepository.findOne({ where: { id: id } });
       if (!findClass) {
@@ -151,12 +155,12 @@ export class ClassService {
       }
       const updateClass = await this.classRepository.update(Number(id), {
         name: class_data.name,
-        teacher: {id:class_data.teacher_id},
-        course: { id: class_data.course_id },
+        teacher: {id:((class_data.teacher_id)&&(String(class_data.teacher_id)!='none'))?class_data.teacher_id:null},
+        course: { id: (class_data.course_id&&(String(class_data.course_id)!='none'))?class_data.course_id:null },
         max_students: class_data.max_students
       });
       return {
-        status: HttpStatus.CREATED,
+        status: HttpStatus.OK,
         data: {
           success: true,
           message: "Update class success"

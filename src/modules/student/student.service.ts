@@ -181,7 +181,7 @@ export class StudentService {
         email:student_data.email,
         phone:student_data.phone,
         address:student_data.address,
-        ...newDataUpdate
+        class:{id:(student_data.class_id&&student_data.class_id!='none')?student_data.class_id:null}
       });
       return {
         status: HttpStatus.OK,

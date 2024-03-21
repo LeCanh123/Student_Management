@@ -15,8 +15,8 @@ export class CourseService {
   async getAll(skip:number,take:number) {
     try {
       const data = await this.courseRepository.find({ where: { status: true }, relations: ['class', 'modulecourse'],
-      skip: skip,
-      take: take 
+      skip: skip?skip:0,
+      take: take?take:1000 
       });
       const total = await this.courseRepository.createQueryBuilder('course')
       .where("course.status = :status", { status: true })
