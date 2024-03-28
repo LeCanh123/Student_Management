@@ -1,3 +1,18 @@
+
+import { diskStorage } from 'multer';
+import { v4 as uuidv4 } from 'uuid';
+import { FileInterceptor } from '@nestjs/platform-express';
+
+export const file_setup = FileInterceptor('file', {
+    storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, cb) => {
+            const filename = `${uuidv4()}-${file.originalname}`;
+            cb(null, filename);
+        },
+    }),
+})
+
 export const Api={
     get_success:{
         status: 200,
@@ -213,6 +228,57 @@ export const Api={
             class_id: { type: 'number' ,default:1},
           },
           required: ['student_id', 'class_id']
+        }
+    },
+    async_with_excel_success: {
+        status: 200,
+        description: 'Get course success',
+        schema: {
+            type: 'array',
+            items: {
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean', default: true },
+                    message: { type: 'string', default: "Async student success" },
+
+                },
+            }
+        }
+    },
+    async_with_excel_failed: {
+        status: 400,
+        description: 'Error: Bad Request',
+        schema: {
+            type: 'object',
+            properties: {
+                error: {
+                    type: 'string',
+                    properties: {
+                    },
+                    default: "Bad Request"
+                },
+                message: {
+                    type: 'string',
+                    default: "Data is invalid"
+                },
+                statusCode: {
+                    type: "number",
+                    default: 400
+                }
+            },
+        }
+    },
+    body_async_with_excel: {
+        description: 'Async student with exel',
+        schema: {
+            type: 'object',
+            properties: {
+                file: {
+                    type: 'string',
+                    format: 'binary',
+                }
+            },
+            required: []
         }
     },
     update_success :{

@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Post, Res, HttpStatus, Version, Put, Param, Delete, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Res, HttpStatus, Version, Put, Param, Delete, Query, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { ClassService } from './class.service';
 import { Response } from 'express';
-import { ApiBody, ApiTags, ApiBearerAuth, ApiParam, ApiResponse } from '@nestjs/swagger';
-import { Api } from './swagger/class.swagger';
+import { ApiBody, ApiTags, ApiBearerAuth, ApiParam, ApiResponse, ApiConsumes } from '@nestjs/swagger';
+import { Api, file_setup } from './swagger/class.swagger';
 @ApiTags('Class')
 @Controller({ path: 'classes', version: '' })
 export class ClassController {
@@ -64,6 +64,25 @@ export class ClassController {
     let result = await this.classService.add_student(data);
     return res.status(result.status || HttpStatus.BAD_REQUEST).json(result.data);
   }
+
+  @Version('')
+  @Post('add-student-with-excel')
+  @UseInterceptors(file_setup)
+  @ApiConsumes('multipart/form-data')
+  @ApiBody(Api.body_async_with_excel)
+  @ApiResponse(Api.async_with_excel_success)
+  @ApiResponse(Api.async_with_excel_failed)
+  @ApiBearerAuth()
+  async async_With_Excel(@Body() data: any,@Res() res: Response,@UploadedFile() file) {
+    if(file){
+      let filePath=file.path
+      let result = await this.classService.add_student_with_exel({path:filePath,...data});
+      return res.status(result.status || HttpStatus.INTERNAL_SERVER_ERROR).json(result.data);
+    }else{
+      let result = await this.classService.add_student_with_exel({path:null,...data});
+      return res.status(result.status || HttpStatus.INTERNAL_SERVER_ERROR).json(result.data);
+    }
+  } 
 
 
   @Put(':id')

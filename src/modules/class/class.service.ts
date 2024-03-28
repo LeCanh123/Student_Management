@@ -5,6 +5,11 @@ import { Class } from './database/class.entity';
 import ClassDto from './dtos/class.dto';
 import UpdateClassDto from './dtos/update-class.dto';
 import { Student } from '../student/database/student.entity';
+// exels
+import * as xlsx from 'xlsx';
+import { delete_file } from 'src/common/comon';
+import { mapData } from './function/function';
+const path = require('path');
 
 
 @Injectable()
@@ -125,6 +130,40 @@ export class ClassService {
         data: {
           success: true,
           message: "Add student success"
+        }
+      };
+    }
+    catch (error) {
+      return {
+        status: HttpStatus.BAD_REQUEST,
+        data: {
+          error: "Bad Request",
+          message: "Data is invalid. Please check and try again."
+        }
+      };
+    }
+  }
+
+  async add_student_with_exel(filepath:any) {
+    try {
+      const absolutePath = path.resolve();
+      const workbook = xlsx.readFile(absolutePath+"/"+filepath.path);
+      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+      const data:any = xlsx.utils.sheet_to_json(worksheet);
+      let studentRepository=this.studentRepository;
+      const class_id = filepath.class_id
+      console.log("class_id",class_id);
+      
+      for (const item of data) {
+        mapData(class_id,item,studentRepository)
+      }
+      let finalPAth=`${absolutePath}/${filepath.path}`
+      delete_file(finalPAth)
+      return {
+        status: HttpStatus.CREATED,
+        data: {
+          success: true,
+          message: "Async student success"
         }
       };
     }
